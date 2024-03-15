@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo list</title>
+
+    <script src="../static/app.js"></script>
+</head>
+
+<body>
+
+    <h1>
+        Todo list
+    </h1>
+
+    <input type="text" id="todo-input" placeholder="Add something"/>
+    <button type="button" onclick="onButtonClick()">Add todo</button>
+
+    <div id="todos-container">
+
+    </div>
+</body>
+
+</html>

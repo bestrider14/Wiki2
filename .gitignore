@@ -1,5 +1,8 @@
 # Default ignored files
 /shelf/
+.idea
+.venv
+.env
 /workspace.xml
 # Editor-based HTTP Client requests
 /httpRequests/
