@@ -1,33 +1,44 @@
-function displayNewTodo(todoText) {
-    var todosContainer = document.getElementById("todos-container")
+function migrate() {
+    let statusElement = document.getElementById("migrate-status");
+    statusElement.innerHTML = "Migration en cours..."
 
-    var newTodoElement = document.createElement("div")
-
-    newTodoElement.innerText = todoText
-
-    todosContainer.appendChild(newTodoElement)
+    fetch("/migrate", {
+        method: "POST"
+    }).then(function(response) {
+        if (response.status === 200) {
+            statusElement.innerHTML = "<p style='color:green'>Migration réussie. Cliquez sur rafraîchir pour voir le nouveau contenu de la BD.</p>"
+        } else {
+            statusElement.innerHTML = "<p style='color:red'>Échec. Une erreur est survenue lors de la migration. Référez-vous à l'erreur dans votre IDE.</p> <p style='color:#ff0000'>IMPORTANT: vous devez recréer la BD à nouveau.</p>"
+        }
+    })
 }
 
-function onButtonClick() {
-    var inputElement = document.getElementById("todo-input")
+function up()  {
+    let statusElement = document.getElementById("up-status");
+    statusElement.innerHTML = "Création en cours..."
 
-    var newTodoText = inputElement.value
-
-    displayNewTodo(newTodoText)
-
-    postTodo(newTodoText)
+    fetch("/up", {
+        method: "POST"
+    }).then(function(response) {
+        if (response.status === 200) {
+            statusElement.innerHTML = "<p style='color:green'>Création réussie. Cliquez sur rafraîchir pour voir le nouveau contenu de la BD.</p>"
+        } else {
+            statusElement.innerHTML = "<p style='color:red'>Échec. Une erreur est survenue lors de la création. Référez-vous à l'erreur dans votre IDE.</p>"
+        }
+    })
 }
 
-function postTodo(todoText) {
-    var url = "add-todo"
+function rollback()  {
+    let statusElement = document.getElementById("rollback-status");
+    statusElement.innerHTML = "Migration arrière en cours..."
 
-    fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            text: todoText
-        })
+    fetch("/rollback", {
+        method: "POST"
+    }).then(function(response) {
+        if (response.status === 200) {
+            statusElement.innerHTML = "<p style='color:green'>Migration arrière réussie. Cliquez sur rafraîchir pour voir le nouveau contenu de la BD.</p>"
+        } else {
+            statusElement.innerHTML = "<p style='color:red'>Échec. Une erreur est survenue lors de la migration arrière. Référez-vous à l'erreur dans votre IDE.</p> <p style='color:red'>IMPORTANT: vous devez recréer la BD à nouveau.</p>"
+        }
     })
 }

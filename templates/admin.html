@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Wiki 2</title>
+
+    <script src="../static/app.js"></script>
+</head>
+<body>
+    <h1>Admin</h1>
+
+    <h3>
+        État du schéma:
+        {% if migration_state == 0 %}
+            initial
+        {% else %}
+            {{migration_state}} migration(s) appliquée(s)
+        {% endif %}
+    </h3>
+
+    <button class="button red" onclick="up()">Créer</button>
+    <span id="up-status"></span>
+
+    <button class="button red" onclick="rollback()">Roll Back</button>
+    <span id="rollback-status"></span>
+
+    <button class="button green" onclick="migrate()">Migrer</button>
+    <span id="migrate-status"></span>
+</body>
+</html>
