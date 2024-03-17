@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Wiki 2</title>
-
-    <script src="../static/app.js"></script>
-</head>
-<body>
+{% extends 'index.html' %}
+{% block body %}
     <h1>Admin</h1>
 
     <h3>
@@ -26,5 +19,4 @@
 
     <button class="button green" onclick="migrate()">Migrer</button>
     <span id="migrate-status"></span>
-</body>
-</html>
+{% endblock %}

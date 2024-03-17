@@ -1,16 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Wiki 2</title>
-
-    <script src="../static/app.js"></script>
-</head>
-
-<body>
-    <h1>
-        Wiki 2
-    </h1>
-</body>
-
+    <head>
+    {% include "include/head.html" %}
+    </head>
+    <body>
+        <div class="header">
+            <nav>
+                <a href="/"><img src="{{url_for('static', filename='images/logo.png')}}" class="logo" alt="logo"></a>
+                <ul class="nav-links">
+                    <li><a href="/">Accueil</a></li>
+                    <li><a href="">Liste Article</a></li>
+                    <li><a href="">Article Aléatoire</a></li>
+                    <li><a href="">Inscription</a></li>
+                    <a href="admin"><li class="btn">Connexion</li></a>
+                </ul>
+            </nav>
+            <div class="content">
+                {% block body %}
+                    <h1>Bienvenue sur Wiki²</h1>
+                    <form>
+                            <input type="text" placeholder="&#x270e;   Entrez un mot clé">
+                            <button type="submit">Trouver un article</button>
+                    </form>
+                {% endblock %}
+            </div>
+        </div>
+    </body>
 </html>
