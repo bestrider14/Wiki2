@@ -1,1 +1,1 @@
-Juste a clone le repo et allez a l'adresse /admin. Pour l'instant on y accedera comme cela, mais plus tard quand on aura un login et un menu on pourra y aller par la. Ensuite faite une Database et allez cree un .env avec vos donnees. Clique ensuite sur le bouton creer et voila.
+Juste clone le repo. Creer une database et fait vous un .env avec vos donnees. Ensuite cliquer sur connexion (pour linstant on tombe sur la page admin mais cest temporaire) et clique sur creer la BD.
