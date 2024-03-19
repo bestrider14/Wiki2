@@ -15,15 +15,18 @@
                     <a href="admin"><li class="btn">Connexion</li></a>
                 </ul>
             </nav>
-            <div class="content">
-                {% block body %}
-                    <h1>Bienvenue sur Wiki²</h1>
-                    <form>
-                            <input type="text" placeholder="&#x270e;   Entrez un mot clé">
-                            <button type="submit">Trouver un article</button>
-                    </form>
-                {% endblock %}
-            </div>
         </div>
+
+        {% block body %}
+        <div class="content_center">
+            <h1>Bienvenue sur Wiki²</h1>
+            <form>
+                    <input type="text" placeholder="&#x270e;   Entrez un mot clé">
+                    <button type="submit">Trouver un article</button>
+            </form>
+        </div>
+        {% endblock %}
+
+
     </body>
 </html>
