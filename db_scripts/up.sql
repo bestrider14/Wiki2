@@ -36,7 +36,7 @@ CREATE TABLE refs(
     nomAuteur VARCHAR(255) NOT NULL,
     titreDocument VARCHAR(255) NOT NULL,
     anneeParution YEAR NOT NULL,
-    ISBN BIGINT NOT NULL,
+    ISBN BIGINT NOT NULL UNIQUE,
     editeur VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (idReference)
@@ -64,27 +64,6 @@ CREATE TABLE edit(
     FOREIGN KEY (idArticle) REFERENCES articles(idArticle) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (idUtilisateur) REFERENCES utilisateurs(idUtilisateur) ON UPDATE CASCADE ON DELETE SET NULL
 );
-
--- GÂCHETTES
-
--- UNE GÂCHETTE SUR LA TABLE CATEGORIE POUR S'ASSURER QU'IL EXISTE UN SEUL PARENT RACINE
--- POUR TOUTE LA HIÉRARCHIE DE CATÉGORIE. LE PARENT EST LE SEUL TUPLE QUI POSSÈDE LA VALEUR "NULL"
--- POUR L'ID
-DELIMITER //
-CREATE TRIGGER uneSeuleRacineHierarchique
-BEFORE INSERT ON categories
-FOR EACH ROW
-BEGIN
-DECLARE nombreDeRacine INT;
-    IF NEW.idCategorieParent IS NULL THEN
-        SELECT COUNT(*) INTO nombreDeRacine FROM categories WHERE idCategorieParent IS NULL;
-        IF nombreDeRacine > 0 THEN
-           SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = CONCAT('Il ne peut y avoir qu une seule categorie racine. La nouvelle catégorie : "', NEW.nom,'" doit avoir un parent');
-        END IF;
-    END IF;
-END//
-DELIMITER ;
-
 
 INSERT INTO utilisateurs VALUES
 (1,'Monique Bogisich','da93930275e68699957c0b3a3f72a9fd','bahringer.tamara@example.com','Masculin',1),

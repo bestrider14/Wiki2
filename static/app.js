@@ -10,6 +10,10 @@ function migrate() {
         } else {
             statusElement.innerHTML = "<p style='color:red'>Échec. Une erreur est survenue lors de la migration. Référez-vous à l'erreur dans votre IDE.</p> <p style='color:#ff0000'>IMPORTANT: vous devez recréer la BD à nouveau.</p>"
         }
+
+        setTimeout(function(){
+            window.location.reload();
+        }, 3000);
     })
 }
 
@@ -25,6 +29,10 @@ function up()  {
         } else {
             statusElement.innerHTML = "<p style='color:red'>Échec. Une erreur est survenue lors de la création. Référez-vous à l'erreur dans votre IDE.</p>"
         }
+
+        setTimeout(function(){
+            window.location.reload();
+        }, 3000);
     })
 }
 
@@ -40,5 +48,10 @@ function rollback()  {
         } else {
             statusElement.innerHTML = "<p style='color:red'>Échec. Une erreur est survenue lors de la migration arrière. Référez-vous à l'erreur dans votre IDE.</p> <p style='color:red'>IMPORTANT: vous devez recréer la BD à nouveau.</p>"
         }
+
+        setTimeout(function(){
+            window.location.reload();
+        }, 3000);
+
     })
 }

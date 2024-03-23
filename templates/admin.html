@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
 {% block body %}
+<div class="content">
     <h1>Admin</h1>
 
     <h3>
@@ -12,11 +13,10 @@
     </h3>
 
     <button class="button red" onclick="up()">Créer</button>
-    <span id="up-status"></span>
-
     <button class="button red" onclick="rollback()">Roll Back</button>
-    <span id="rollback-status"></span>
-
     <button class="button green" onclick="migrate()">Migrer</button>
+    <span id="rollback-status"></span>
+    <span id="up-status"></span>
     <span id="migrate-status"></span>
+</div>
 {% endblock %}
