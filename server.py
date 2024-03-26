@@ -25,9 +25,10 @@ def articles():
 
 @app.route("/article", methods=["GET"])
 def article():
-    id = request.args.get('id')
-    article = database.get_article(id)
-    return render_template("article.html", article=article)
+    idArticle = request.args.get('id')
+    infoArticle = database.get_article(idArticle)
+    print(infoArticle)
+    return render_template("article.html", article=infoArticle)
 
 
 @app.route("/migrate", methods=["POST"])

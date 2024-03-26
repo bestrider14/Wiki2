@@ -72,7 +72,9 @@ class Database:
         liste = [x for x in self.cursor.fetchall()]
         return liste
 
-    def get_article(self, id):
-        statement = (f", ")
-        return article
+    def get_article(self, idarticle):
+        statement = f"call infoArticle('{idarticle}')"
+        self.cursor.execute(statement)
+
+        return self.cursor.fetchone()
 
