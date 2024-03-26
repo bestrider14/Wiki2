@@ -17,6 +17,7 @@ class Database:
 
         self._open_sql_connection()
         self.migration_counter = 0
+        self.liste_articles = []
 
     def _open_sql_connection(self):
         self.connection = pymysql.connect(
@@ -61,3 +62,17 @@ class Database:
 
     def get_migration_stack_size(self):
         return self.migration_counter
+
+    def get_liste_articles_starting_with(self, letter):
+        statement = (f"SELECT articles.titre, articles.dateCreation, utilisateurs.nom, articles.idArticle "
+                     f"FROM articles INNER JOIN utilisateurs ON articles.idCreateur = utilisateurs.idUtilisateur "
+                     f"WHERE articles.titre LIKE CONCAT('{letter}', '%') ORDER BY articles.titre;")
+        self.cursor.execute(statement)
+
+        liste = [x for x in self.cursor.fetchall()]
+        return liste
+
+    def get_article(self, id):
+        statement = (f", ")
+        return article
+
