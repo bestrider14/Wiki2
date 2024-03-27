@@ -78,3 +78,8 @@ class Database:
 
         return self.cursor.fetchone()
 
+    def random_id(self):
+        statement = f"SELECT articles.idArticle FROM articles ORDER BY RAND() LIMIT 1;"
+        self.cursor.execute(statement)
+
+        return self.cursor.fetchone()[0]

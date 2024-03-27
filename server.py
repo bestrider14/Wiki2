@@ -27,34 +27,20 @@ def articles():
 def article():
     idArticle = request.args.get('id')
     infoArticle = database.get_article(idArticle)
-    print(infoArticle)
     return render_template("article.html", article=infoArticle)
 
 
-@app.route("/migrate", methods=["POST"])
-def migrate():
-    try:
-        database.push_migration()
-        return Response(status=200)
-    except Exception as e:
-        print(e)
-        return Response(status=406)
+@app.route("/random")
+def random():
+    idArticle = database.random_id()
+    infoArticle = database.get_article(idArticle)
+    return render_template("article.html", article=infoArticle)
 
 
 @app.route("/up", methods=["POST"])
 def up():
     try:
         database.up()
-        return Response(status=200)
-    except Exception as e:
-        print(e)
-        return Response(status=406)
-
-
-@app.route("/rollback", methods=["POST"])
-def rollback():
-    try:
-        database.rollback()
         return Response(status=200)
     except Exception as e:
         print(e)

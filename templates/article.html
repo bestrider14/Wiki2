@@ -3,8 +3,56 @@
 <div class="content">
     <h1>{{ article[0] }}</h1>
 
-    <p>{{ article[2] }}</p>
+    <div class="content_article">
+        <div class="infos">
+            <h3>Informations sur l'article</h3>
+            <br>
+            <table>
+                <tr>
+                    <th class="right">Date de création:</th>
+                    <th>{{ article[1] }}</th>
+                </tr>
+                <tr>
+                    <th class="right">Catégorie:</th>
+                    <th>{{ article[3] }}</th>
+                </tr>
+                <tr>
+                    <th class="right">Auteur:</th>
+                    <th>{{ article[4] }}</th>
+                </tr>
+            </table>
+            <br>
+            <h4>Réference</h4>
+            <br>
+        <table>
+            <tr>
+                <th class="right">Livre:</th>
+                <th>{{ article[8] }}</th>
+            </tr>
+            <tr>
+                <th class="right">Auteur:</th>
+                <th>{{ article[7] }}</th>
+            </tr>
+            <tr>
+                <th class="right">Année de parution:</th>
+                <th>{{ article[9] }}</th>
+            </tr>
+            <tr>
+                <th class="right">ISBN:</th>
+                <th>{{ article[10] }}</th>
+            </tr>
+            <tr>
+                <th class="right">Éditeur:</th>
+                <th>{{ article[11] }}</th>
+            </tr>
 
+        </table>
+        </div>
+
+        <p class="text_article">{{ article[2] }}</p>
+
+
+    </div>
 
 </div>
 {% endblock %}

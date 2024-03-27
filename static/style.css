@@ -190,3 +190,31 @@ margin-left: auto;
 .active::after{
     width: 100% !important;
 }
+
+.content_article{
+    width: 80%;
+    margin-left: 6%;
+    padding-top: 50px;
+}
+
+.text_article{
+    text-align: justify;
+    line-height: 1.5;
+}
+
+.infos{
+    float: right;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.infos h3,h4{
+    color: #ff3d00;
+}
+
+.right{
+    text-align: right;
+}
+
+
