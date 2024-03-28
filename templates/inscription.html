@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% extends "index.html" %}
+<head>
+    {% include "include/head.html" %}
+</head>
+<body>
+    <div class="header">
+        <nav>
+            <a href="/"><img src="{{url_for('static', filename='images/logo.png')}}" class="logo" alt="logo"></a>
+            <ul class="nav-links">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="">Liste Article</a></li>
+                <li><a href="">Article Aléatoire</a></li>
+                <li><a href="">Inscription</a></li>
+                <a href="admin"><li class="btn">Connexion</li></a>
+            </ul>
+        </nav>
+    </div>
+
+{% block body %}
+    <div class="content_center">
+    <h1>Inscription d'un nouvel utilisateur</h1>
+    <form class="inscription_form" action="/inscription" method="post">
+        <input class = "inputForm" name="nomUtilisateur" type="text" required pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Entrez un nom d'utilisateur" maxlength="50">
+        <input class = "inputForm" name="email" type="email" placeholder="&#x270e;   Entrez votre email" maxlength="250" required>
+        <input class = "inputForm" name="motDePasse" type="text" placeholder="&#x270e;   Entrez votre mot de passe" required>
+        <select id="selectGenre" name="choixGenre" required>
+            <option value="masculin">Masculin</option>
+            <option value="feminin">Féminin</option>
+            <option value="autre">Autre</option>
+        </select>
+        <select id="selectTypeUtilisateur" name="choixTypeUtilisateur" required>
+            <option value="utilisateur">Utilisateur</option>
+            <option value="moderateur">Modérateur</option>
+        </select>
+        <button type="submit">S'inscrire</button>
+    </form>
+</div>
+{% endblock %}
+
+</body>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) =>{
+        const parametresUrl = new URLSearchParams(window.location.search);
+        const message = parametresUrl.get('message');
+        if(message){
+            alert(message);
+        }
+    })
+</script>
+
+</html>
