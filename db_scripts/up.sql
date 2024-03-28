@@ -1,6 +1,6 @@
 CREATE TABLE utilisateurs(
     idUtilisateur INT AUTO_INCREMENT,
-    nom VARCHAR(50) NOT NULL,
+    nom VARCHAR(50) UNIQUE NOT NULL,
     motDePasse VARCHAR(255) NOT NULL ,
     email VARCHAR(255) NOT NULL ,
     genre ENUM('Masculin', 'Feminin', 'Autre') NOT NULL ,

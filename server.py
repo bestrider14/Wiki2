@@ -19,6 +19,7 @@ def inscription():
         nom = request.form.get("nomUtilisateur")
         email = request.form.get("email")
         genre = request.form.get("choixGenre")
+
         # avoir un choix d'utilisateur sous format 1 pour modérateur, 0 pour utilisateur
         choixTypeUtilisateur = request.form.get("choixTypeUtilisateur")
         typeUtilisateur = 1 if choixTypeUtilisateur == 'moderateur' else 0
@@ -27,27 +28,10 @@ def inscription():
         motPasseEnBytes = motDePasseForm.encode('utf-8')
         motDePasseHash = bcrypt.hashpw(motPasseEnBytes, bcrypt.gensalt())
 
-        # ouvrir une connection
-        connection = database.get_connection()
-        cursor = connection.cursor()
+        msg = database.inscription(nom, motDePasseHash, email, genre)
 
-        # Préparer la requête SQL
-        requete = "INSERT INTO utilisateurs (nom, motDePasse, email, genre, role) VALUES (%s, %s, %s, %s, %s)"
-        data = (nom, motDePasseHash, email, genre, typeUtilisateur)
+        return redirect(url_for('inscription') + f'?message={msg}')
 
-        # Envoyer la requete
-        try:
-            cursor.execute(requete, data)
-            connection.commit()
-            return redirect(url_for('index') + '?message=Inscription réussie !')
-
-        except pymysql.MySQLError as e:
-            print(e)
-            connection.rollback()
-            return redirect(url_for('inscription') + f'?message=Erreur à l inscription ${e}')
-
-        finally:
-            cursor.close()
     else:
         return render_template('inscription.html')
 
@@ -77,6 +61,14 @@ def random():
     idArticle = database.random_id()
     infoArticle = database.get_article(idArticle)
     return render_template("article.html", article=infoArticle)
+
+@app.route("/search", methods=["POST"])
+def search():
+    keyword = request.json
+    listeArticle = database.find_article(keyword["text"])
+    #infoArticle = database.get_article(idArticle)
+    print(listeArticle)
+    return render_template("article.html", article=1)
 
 
 @app.route("/up", methods=["POST"])

@@ -83,3 +83,26 @@ class Database:
         self.cursor.execute(statement)
 
         return self.cursor.fetchone()[0]
+
+    def find_article(self, keyword):
+        statement = f"SELECT articles.idArticle FROM articles WHERE articles.titre LIKE CONCAT('%','{keyword}', '%') ORDER BY articles.titre;"
+        self.cursor.execute(statement)
+        liste = [x[0] for x in self.cursor.fetchall()]
+        return liste
+
+    def inscription(self, nom, mdp, email, genre):
+        # Préparer la requête SQL
+        requete = "INSERT INTO utilisateurs (nom, motDePasse, email, genre, role) VALUES (%s, %s, %s, %s, %s)"
+        data = (nom, mdp, email, genre, 0)
+
+        # Envoyer la requete
+        try:
+            self.cursor.execute(requete, data)
+            self.connection.commit()
+            return "Inscription réussie"
+
+        except pymysql.MySQLError as e:
+            print(e)
+            self.connection.rollback()
+            return "Erreur à l inscription"
+
