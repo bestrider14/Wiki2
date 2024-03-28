@@ -90,7 +90,7 @@ class Database:
         liste = [x[0] for x in self.cursor.fetchall()]
         return liste
 
-    def inscription(self, nom, mdp, email, genre):
+    def inscription(self, nom, mdp, email , genre):
         # Préparer la requête SQL
         requete = "INSERT INTO utilisateurs (nom, motDePasse, email, genre, role) VALUES (%s, %s, %s, %s, %s)"
         data = (nom, mdp, email, genre, 0)
