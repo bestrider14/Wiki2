@@ -2,6 +2,28 @@ function articleLink(id){
     window.location.href = "/article?id="+id;
 }
 
+function logIn(){
+    let inNom = document.getElementById("nom")
+    let nom = inNom.value
+
+    let inMdp = document.getElementById("mdp")
+    let mdp = inMdp.value
+
+    fetch("connexion", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            text: nom,mdp
+        })
+    }).then(function(response) {
+        return response.json()
+    }).then(function(data) {
+        console.log(data)
+    })
+}
+
 function findArticle(){
     let inputElement = document.getElementById("keyword")
     let keyword = inputElement.value
