@@ -1,0 +1,11 @@
+{% extends 'index.html' %}
+{% block body %}
+    <div class="content_center">
+        <h1>Inscription d'un nouvel utilisateur</h1>
+        <form>
+            <input id="nom" class = "inputForm" name="nomUtilisateur" type="text" required pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Entrez un nom d'utilisateur" maxlength="50">
+            <input id="mdp" class = "inputForm" name="motDePasse" type="text" placeholder="&#x270e;   Entrez votre mot de passe" required>
+            <button onclick="logIn()">Connexion</button>
+        </form>
+    </div>
+{% endblock %}

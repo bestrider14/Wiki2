@@ -12,7 +12,11 @@
                     <li><a href="articles" onclick="location.href=this.href+'?letter=A';return false;">Liste Articles</a></li>
                     <li><a href="random">Article Aléatoire</a></li>
                     <li><a href="{{ url_for('inscription') }}">Inscription</a></li>
-                    <a href="admin"><li class="btn">Connexion</li></a>
+                    {% if logIn %}
+                        <a href="admin"><li class="btn">Compte</li></a>
+                    {% else %}
+                        <a href="connexion"><li class="btn">Connexion</li></a>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
@@ -37,6 +41,10 @@
             alert(message);
         }
     })
+
+    document.onload
+
+
 </script>
 
 </html>

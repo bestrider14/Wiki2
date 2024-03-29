@@ -1,5 +1,7 @@
+import bcrypt
 import pymysql
 import os
+from Utilisateur import Utilisateur
 from dotenv import load_dotenv
 from sql_utils import run_sql_file
 
@@ -106,3 +108,16 @@ class Database:
             self.connection.rollback()
             return "Erreur à l inscription"
 
+    def connexion(self, nom, mdp, utilisateur):
+        self.cursor.execute("SELECT motDePasse FROM utilisateurs WHERE nom = %s", (nom))
+        mdpStored = self.cursor.fetchone()[0]
+
+        # vérifier mot de passe
+        if mdpStored and bcrypt.checkpw(mdp, mdpStored):
+            statement = f"SELECT idUtilisateur, nom, email, genre, role FROM utilisateur WHERE nom = '{nom}';"
+            placeholder = self.cursor.execute(statement)
+            utilisateur.setInfoUtilisateur(placeholder['idUtilisateur'], placeholder['nom'], placeholder['email'], placeholder['genre'],
+                        placeholder['role'])
+            return True
+        else:
+            return False
