@@ -36,13 +36,12 @@ def inscription():
 
 @app.route("/connexion", methods=["GET", "POST"])
 def connexion():
-    print("exterieur if")
     if request.method == 'POST':
-        print("POST")
-        nom = request.form.get("nomUtilisateur")
-        motDePasse = request.form.get("motDePasse")
-        print(nom)
+        data = request.get_json()
+        nom = data['username']
+        motDePasse = data['password']
         if database.connexion(nom, motDePasse, user):
+            print(user.getInfoUtilisateur())
             return render_template('index.html', logIn=True)
         else:
             return render_template('connexion.html', error=True)

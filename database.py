@@ -113,11 +113,12 @@ class Database:
         mdpStored = self.cursor.fetchone()[0]
 
         # vérifier mot de passe
-        if mdpStored and bcrypt.checkpw(mdp, mdpStored):
-            statement = f"SELECT idUtilisateur, nom, email, genre, role FROM utilisateur WHERE nom = '{nom}';"
-            placeholder = self.cursor.execute(statement)
-            utilisateur.setInfoUtilisateur(placeholder['idUtilisateur'], placeholder['nom'], placeholder['email'], placeholder['genre'],
-                        placeholder['role'])
+        if mdpStored and bcrypt.checkpw(mdp.encode('utf-8'), mdpStored.encode('utf-8')):
+            statement = "SELECT idUtilisateur, nom, email, genre, role FROM utilisateurs WHERE nom = %s"
+            self.cursor.execute(statement, (nom,))
+            placeholder = self.cursor.fetchone()
+            utilisateur.setInfoUtilisateur(placeholder[0], placeholder[1], placeholder[2], placeholder[3],
+                        placeholder[4])
             return True
         else:
             return False

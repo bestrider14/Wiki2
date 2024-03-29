@@ -15,7 +15,8 @@ function logIn(){
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            text: nom,mdp
+            username: nom,
+            password: mdp
         })
     }).then(function(response) {
         return response.json()
