@@ -1,10 +1,11 @@
-import pymysql
 from flask import Flask, render_template, Response, request, url_for, redirect
 import bcrypt
 from database import Database
+from Utilisateur import Utilisateur
 
 app = Flask(__name__)
 database = Database()
+user = Utilisateur()
 
 
 @app.route("/")
@@ -20,9 +21,6 @@ def inscription():
         email = request.form.get("email")
         genre = request.form.get("choixGenre")
 
-        # avoir un choix d'utilisateur sous format 1 pour modérateur, 0 pour utilisateur
-        choixTypeUtilisateur = request.form.get("choixTypeUtilisateur")
-        typeUtilisateur = 1 if choixTypeUtilisateur == 'moderateur' else 0
         # hasher le mot de passe de l'utilisateur
         motDePasseForm = request.form.get("motDePasse")
         motPasseEnBytes = motDePasseForm.encode('utf-8')
@@ -34,6 +32,21 @@ def inscription():
 
     else:
         return render_template('inscription.html')
+
+
+@app.route("/connexion", methods=["GET", "POST"])
+def connexion():
+    print("exterieur if")
+    if request.method == 'POST':
+        print("POST")
+        nom = request.form.get("nomUtilisateur")
+        motDePasse = request.form.get("motDePasse")
+        print(nom)
+        if database.connexion(nom, motDePasse, user):
+            return render_template('index.html', logIn=True)
+        else:
+            return render_template('connexion.html', error=True)
+    return render_template('connexion.html', error=False)
 
 
 @app.route("/admin")
@@ -62,11 +75,12 @@ def random():
     infoArticle = database.get_article(idArticle)
     return render_template("article.html", article=infoArticle)
 
+
 @app.route("/search", methods=["POST"])
 def search():
     keyword = request.json
     listeArticle = database.find_article(keyword["text"])
-    #infoArticle = database.get_article(idArticle)
+    #    infoArticle = database.get_article(idArticle)
     print(listeArticle)
     return render_template("article.html", article=1)
 
