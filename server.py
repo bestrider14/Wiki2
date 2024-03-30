@@ -31,7 +31,7 @@ def validate_login():
         userInfo = database.getUserInfo(form["email"])
         print(userInfo)
         session["userId"] = userInfo[0]
-        session["userName"] = userInfo[1]
+        session["userName"] = userInfo[1].capitalize()
         session["userEmail"] = userInfo[2]
         session["userGenre"] = userInfo[3]
         session["userRole"] = userInfo[4]
@@ -74,7 +74,7 @@ def moderateur():
 
 
 @app.route("/admin")
-def user():
+def admin():
     migration_state = database.get_migration_stack_size()
     return render_template("admin.html", migration_state=migration_state)
 
@@ -110,8 +110,12 @@ def search():
 
 @app.route("/checkRole")
 def checkRole():
-    if session['role'] == 0:
+    if session['userRole'] == 0:
         return redirect(url_for('user'))
+    if session['userRole'] == 1:
+        return redirect(url_for('moderateur'))
+    if session['userRole'] == 2:
+        return redirect(url_for('admin'))
 
 
 @app.route("/up", methods=["POST"])

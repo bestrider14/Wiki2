@@ -7,12 +7,15 @@
         <div class="header">
             <nav>
                 <a href="/"><img src="{{url_for('static', filename='images/logo.png')}}" class="logo" alt="logo"></a>
+
                 <ul class="nav-links">
+                    <li>Bienvenue {{ session['userName']}}</li>
                     <li><a href="/">Accueil</a></li>
                     <li><a href="{{ url_for('articles') }}" onclick="location.href=this.href+'?letter=A';return false;">Liste Articles</a></li>
                     <li><a href="{{ url_for('random') }}">Article Aléatoire</a></li>
                     {% if session['userId'] %}
-                        <a href="{{ url_for('checkRole') }}"><li class="btn">Compte</li></a>
+                        <li><a href="{{ url_for('checkRole') }}">Gestion compte</a></li>
+                        <a href="{{ url_for('logout') }}"><li class="btn">Déconnexion</li></a>
                     {% else %}
                         <li><a href="{{ url_for('register') }}">Inscription</a></li>
                         <a href="{{ url_for('login') }}"><li class="btn">Connexion</li></a>

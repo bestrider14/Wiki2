@@ -1,18 +1,7 @@
 {% extends 'index.html' %}
 {% block body %}
 <div class="content">
-    <h1>Admin</h1>
+    <h1>Gestion de votre compte: {{ session['userName']}}</h1>
 
-    <h3>
-        État du schéma:
-        {% if migration_state == 0 %}
-            initial
-        {% else %}
-            {{migration_state}} migration(s) appliquée(s)
-        {% endif %}
-    </h3>
-
-    <button class="button red" onclick="up()">Créer</button>
-    <span id="up-status"></span>
 </div>
 {% endblock %}
