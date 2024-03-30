@@ -1,11 +1,20 @@
 {% extends 'index.html' %}
 {% block body %}
-    <div class="content_center">
-        <h1>Inscription d'un nouvel utilisateur</h1>
-        <form>
-            <input id="nom" class = "inputForm" name="nomUtilisateur" type="text" required pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Entrez un nom d'utilisateur" maxlength="50">
-            <input id="mdp" class = "inputForm" name="motDePasse" type="text" placeholder="&#x270e;   Entrez votre mot de passe" required>
-            <button onclick="logIn()">Connexion</button>
+    <div class="content">
+        <h1>Connexion</h1>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashed">
+                    {% for message in messages %}
+                        <li>{{message}}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <form name="login_form" action="/validate_login" method="post">
+            <input class = "inputForm" name="email" type="email" placeholder="&#x270e;   Entrez votre email" maxlength="250" required>
+            <input class = "inputForm" name="motDePasse" type="text" placeholder="&#x270e;   Entrez votre mot de passe" required>
+            <button type="submit">Connexion</button>
         </form>
     </div>
 {% endblock %}

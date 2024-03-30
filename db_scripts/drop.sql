@@ -8,3 +8,4 @@ DROP TABLE IF EXISTS utilisateurs;
 DROP TRIGGER IF EXISTS uneSeuleRacineHierarchique;
 
 DROP PROCEDURE IF EXISTS infoArticle;
+DROP PROCEDURE IF EXISTS compMDP;

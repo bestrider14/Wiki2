@@ -1,27 +1,27 @@
-function articleLink(id){
-    window.location.href = "/article?id="+id;
+const checkIfUserExists = () => {
+    const registrationForm = document.forms['inscription_form']
+    const emailFormElement = registrationForm['email']
+    const email = emailFormElement.value
+    axios.post('/validate_user_registration', {
+        email: email
+    }).then((response) => {
+        if(response.data.user_exists === "True") {
+            console.log(response.data)
+            emailFormElement.setCustomValidity("Ce email est déjà utilsé. Veuillez vous connecter.")
+            emailFormElement.reportValidity()
+        }
+        else{
+            console.log(response.data)
+            emailFormElement.setCustomValidity("")
+            emailFormElement.reportValidity()
+        }
+    }, (error) => {
+        console.log(error)
+    })
 }
 
-function logIn(){
-    let inNom = document.getElementById("nom")
-    let nom = inNom.value
-
-    let inMdp = document.getElementById("mdp")
-    let mdp = inMdp.value
-
-    fetch("connexion", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            text: nom,mdp
-        })
-    }).then(function(response) {
-        return response.json()
-    }).then(function(data) {
-        console.log(data)
-    })
+function articleLink(id){
+    window.location.href = "/article?id="+id;
 }
 
 function findArticle(){
@@ -61,3 +61,4 @@ function up()  {
         }, 3000);
     })
 }
+

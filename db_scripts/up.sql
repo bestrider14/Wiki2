@@ -1,8 +1,8 @@
 CREATE TABLE utilisateurs(
     idUtilisateur INT AUTO_INCREMENT,
-    nom VARCHAR(50) UNIQUE NOT NULL,
+    nom VARCHAR(50) NOT NULL,
     motDePasse VARCHAR(255) NOT NULL ,
-    email VARCHAR(255) NOT NULL ,
+    email VARCHAR(255) UNIQUE NOT NULL ,
     genre ENUM('Masculin', 'Feminin', 'Autre') NOT NULL ,
     role INT NOT NULL,
 
@@ -510,7 +510,7 @@ INSERT INTO `messages` (`idMessage`, `contenu`, `horodatage`, `idArticle`, `idUt
 -- UNE GÂCHETTE SUR LA TABLE CATEGORIE POUR S'ASSURER QU'IL EXISTE UN SEUL PARENT RACINE
 -- POUR TOUTE LA HIÉRARCHIE DE CATÉGORIE. LE PARENT EST LE SEUL TUPLE QUI POSSÈDE LA VALEUR "NULL"
 -- POUR L'ID
-CREATE TRIGGER IF NOT EXISTS uneSeuleRacineHierarchique
+CREATE TRIGGER uneSeuleRacineHierarchique
 BEFORE INSERT ON categories
 FOR EACH ROW
 BEGIN
@@ -526,7 +526,7 @@ DECLARE errorMsg TEXT;
 END ;
 
 -- UNE PROCEDURE POUR SORTIR LES INFORMATIONS IMPORTANTE SUR UN ARTICLE
-CREATE PROCEDURE IF NOT EXISTS infoArticle(IN idArticle INT)
+CREATE PROCEDURE infoArticle(IN idArticle INT)
 BEGIN
     SELECT articles.titre, articles.dateCreation, articles.contenu,
            categories.nom,
@@ -537,4 +537,10 @@ BEGIN
         INNER JOIN utilisateurs ON articles.idCreateur = utilisateurs.idUtilisateur
         LEFT JOIN refs ON articles.idRef = refs.idReference
     WHERE articles.idArticle = idArticle;
-END
+END;
+
+-- DONNE TRUE SI LE MDP ET LE EMAIL MATCH
+CREATE PROCEDURE compMDP (IN emailIn VARCHAR(255), IN mdpIn VARCHAR(255))
+    BEGIN
+        SELECT COUNT(*) FROM utilisateurs WHERE utilisateurs.email = emailIn AND utilisateurs.motDePasse = MD5(mdpIn);
+    END;

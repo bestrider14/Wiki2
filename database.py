@@ -1,7 +1,6 @@
 import bcrypt
 import pymysql
 import os
-from Utilisateur import Utilisateur
 from dotenv import load_dotenv
 from sql_utils import run_sql_file
 
@@ -68,8 +67,9 @@ class Database:
     def get_liste_articles_starting_with(self, letter):
         statement = (f"SELECT articles.titre, articles.dateCreation, utilisateurs.nom, articles.idArticle "
                      f"FROM articles INNER JOIN utilisateurs ON articles.idCreateur = utilisateurs.idUtilisateur "
-                     f"WHERE articles.titre LIKE CONCAT('{letter}', '%') ORDER BY articles.titre;")
-        self.cursor.execute(statement)
+                     f"WHERE articles.titre LIKE %s ORDER BY articles.titre;")
+        data = letter + '%'
+        self.cursor.execute(statement, data)
 
         liste = [x for x in self.cursor.fetchall()]
         return liste
@@ -87,37 +87,41 @@ class Database:
         return self.cursor.fetchone()[0]
 
     def find_article(self, keyword):
-        statement = f"SELECT articles.idArticle FROM articles WHERE articles.titre LIKE CONCAT('%','{keyword}', '%') ORDER BY articles.titre;"
-        self.cursor.execute(statement)
+        statement = f"SELECT articles.idArticle FROM articles WHERE articles.titre LIKE %s ORDER BY articles.titre;"
+        data = '%' + keyword + '%'
+        self.cursor.execute(statement, data)
         liste = [x[0] for x in self.cursor.fetchall()]
         return liste
 
-    def inscription(self, nom, mdp, email , genre):
+    def checkMDP(self, email, password):
+        statement = f"CALL compMDP(%s, %s);"
+        data = (email, password)
+        self.cursor.execute(statement, data)
+        return self.cursor.fetchone()[0]
+
+    def check_if_user_exists(self, email):
+        statement = f"SELECT COUNT(*) FROM utilisateurs WHERE utilisateurs.email = %s;"
+        data = email
+        self.cursor.execute(statement, data)
+        return self.cursor.fetchone()[0]
+
+    def inscription(self, nom, mdp, email, genre):
         # Préparer la requête SQL
-        requete = "INSERT INTO utilisateurs (nom, motDePasse, email, genre, role) VALUES (%s, %s, %s, %s, %s)"
+        requete = "INSERT INTO utilisateurs (nom, motDePasse, email, genre, role) VALUES (%s, MD5(%s), %s, %s, %s)"
         data = (nom, mdp, email, genre, 0)
 
         # Envoyer la requete
         try:
             self.cursor.execute(requete, data)
-            self.connection.commit()
             return "Inscription réussie"
 
         except pymysql.MySQLError as e:
             print(e)
-            self.connection.rollback()
             return "Erreur à l inscription"
 
-    def connexion(self, nom, mdp, utilisateur):
-        self.cursor.execute("SELECT motDePasse FROM utilisateurs WHERE nom = %s", (nom))
-        mdpStored = self.cursor.fetchone()[0]
+    def getUserInfo(self, email):
+        statement = f"SELECT utilisateurs.idUtilisateur, utilisateurs.nom, utilisateurs.email, utilisateurs.genre, utilisateurs.role FROM utilisateurs WHERE utilisateurs.email = %s;"
+        data = email
+        self.cursor.execute(statement, data)
+        return self.cursor.fetchone()
 
-        # vérifier mot de passe
-        if mdpStored and bcrypt.checkpw(mdp, mdpStored):
-            statement = f"SELECT idUtilisateur, nom, email, genre, role FROM utilisateur WHERE nom = '{nom}';"
-            placeholder = self.cursor.execute(statement)
-            utilisateur.setInfoUtilisateur(placeholder['idUtilisateur'], placeholder['nom'], placeholder['email'], placeholder['genre'],
-                        placeholder['role'])
-            return True
-        else:
-            return False

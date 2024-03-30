@@ -9,13 +9,13 @@
                 <a href="/"><img src="{{url_for('static', filename='images/logo.png')}}" class="logo" alt="logo"></a>
                 <ul class="nav-links">
                     <li><a href="/">Accueil</a></li>
-                    <li><a href="articles" onclick="location.href=this.href+'?letter=A';return false;">Liste Articles</a></li>
-                    <li><a href="random">Article Aléatoire</a></li>
-                    <li><a href="{{ url_for('inscription') }}">Inscription</a></li>
-                    {% if logIn %}
-                        <a href="admin"><li class="btn">Compte</li></a>
+                    <li><a href="{{ url_for('articles') }}" onclick="location.href=this.href+'?letter=A';return false;">Liste Articles</a></li>
+                    <li><a href="{{ url_for('random') }}">Article Aléatoire</a></li>
+                    {% if session['userId'] %}
+                        <a href="{{ url_for('checkRole') }}"><li class="btn">Compte</li></a>
                     {% else %}
-                        <a href="connexion"><li class="btn">Connexion</li></a>
+                        <li><a href="{{ url_for('register') }}">Inscription</a></li>
+                        <a href="{{ url_for('login') }}"><li class="btn">Connexion</li></a>
                     {% endif %}
                 </ul>
             </nav>
@@ -32,19 +32,5 @@
         {% endblock %}
 
     </body>
-
-<script>
-    document.addEventListener('DOMContentLoaded', (event) =>{
-        const parametresUrl = new URLSearchParams(window.location.search);
-        const message = parametresUrl.get('message');
-        if(message){
-            alert(message);
-        }
-    })
-
-    document.onload
-
-
-</script>
-
+    <script src="{{ url_for('static', filename='app.js')}}"></script>
 </html>
