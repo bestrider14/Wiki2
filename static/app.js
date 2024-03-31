@@ -24,25 +24,6 @@ function articleLink(id){
     window.location.href = "/article?id="+id;
 }
 
-function findArticle(){
-    let inputElement = document.getElementById("keyword")
-    let keyword = inputElement.value
-
-    fetch("search", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            text: keyword
-        })
-    }).then(function(response) {
-        return response.json()
-    }).then(function(data) {
-        console.log(data)
-    })
-}
-
 function up()  {
     let statusElement = document.getElementById("up-status");
     statusElement.innerHTML = "Création en cours..."

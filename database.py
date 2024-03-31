@@ -64,11 +64,16 @@ class Database:
     def get_migration_stack_size(self):
         return self.migration_counter
 
-    def get_liste_articles_starting_with(self, letter):
+    def find_article(self, keyword):
         statement = (f"SELECT articles.titre, articles.dateCreation, utilisateurs.nom, articles.idArticle "
                      f"FROM articles INNER JOIN utilisateurs ON articles.idCreateur = utilisateurs.idUtilisateur "
                      f"WHERE articles.titre LIKE %s ORDER BY articles.titre;")
-        data = letter + '%'
+
+        if len(keyword) > 1:
+            data = '%' + keyword + '%'
+        else:
+            data = keyword + '%'
+
         self.cursor.execute(statement, data)
 
         liste = [x for x in self.cursor.fetchall()]
@@ -85,13 +90,6 @@ class Database:
         self.cursor.execute(statement)
 
         return self.cursor.fetchone()[0]
-
-    def find_article(self, keyword):
-        statement = f"SELECT articles.idArticle FROM articles WHERE articles.titre LIKE %s ORDER BY articles.titre;"
-        data = '%' + keyword + '%'
-        self.cursor.execute(statement, data)
-        liste = [x[0] for x in self.cursor.fetchall()]
-        return liste
 
     def checkMDP(self, email, password):
         statement = f"CALL compMDP(%s, %s);"

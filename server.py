@@ -1,8 +1,9 @@
 from flask import Flask, render_template, Response, request, jsonify, session, redirect, url_for, flash
 from database import Database
+import os
 
 app = Flask(__name__, instance_relative_config=True)
-app.config['SECRET_KEY'] = '98f4fh7hmk4lvr41qf14j5f3'
+app.config['SECRET_KEY'] = os.urandom(24)
 
 database = Database()
 
@@ -79,14 +80,14 @@ def admin():
     return render_template("admin.html", migration_state=migration_state)
 
 
-@app.route("/articles", methods=["GET"])
+@app.route("/articles")
 def articles():
     letter = request.args.get('letter')
-    liste_articles = database.get_liste_articles_starting_with(letter)
+    liste_articles = database.find_article(letter)
     return render_template("articles.html", articles=liste_articles, letter=letter)
 
 
-@app.route("/article", methods=["GET"])
+@app.route("/article")
 def article():
     idArticle = request.args.get('id')
     infoArticle = database.get_article(idArticle)
@@ -102,20 +103,19 @@ def random():
 
 @app.route("/search", methods=["POST"])
 def search():
-    keyword = request.json
-    listeArticle = database.find_article(keyword["text"])
-    #    infoArticle = database.get_article(idArticle)
-    print(listeArticle)
-    return render_template("article.html", article=1)
+    searchForm = request.form
+    liste_articles = database.find_article(searchForm["keyword"])
+    return render_template("resultats.html", articles=liste_articles, keyword=searchForm["keyword"])
+
 
 @app.route("/checkRole")
 def checkRole():
     if session['userRole'] == 0:
-        return redirect(url_for('user'))
+        return redirect(url_for("user"))
     if session['userRole'] == 1:
-        return redirect(url_for('moderateur'))
+        return redirect(url_for("moderateur"))
     if session['userRole'] == 2:
-        return redirect(url_for('admin'))
+        return redirect(url_for("admin"))
 
 
 @app.route("/up", methods=["POST"])

@@ -242,4 +242,7 @@ input:valid {
     text-align: right;
 }
 
+.error_search{
+    padding-top: 20px;
+}
 

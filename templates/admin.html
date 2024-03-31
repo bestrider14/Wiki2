@@ -1,0 +1,11 @@
+{% extends 'index.html' %}
+{% block body %}
+<div class="content">
+    <h1>Gestion de votre compte: {{ session['userName']}}</h1>
+
+    <button onclick="up()">Créer la base de données</button>
+    <span id="up-status"></span>
+
+
+</div>
+{% endblock %}

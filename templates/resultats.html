@@ -1,0 +1,30 @@
+{% extends 'index.html' %}
+{% block body %}
+<div class="content">
+    <h1>Résultats de la recherche</h1>
+
+     {% if articles %}
+        <table class="liste">
+            <tr class="liste_header">
+                <th>Titre</th>
+                <th>Auteur</th>
+                <th>Date de parution</th>
+            </tr>
+    {% endif %}
+
+    {% for article in articles %}
+        <tr class="liste_content" onclick=articleLink({{ article[3] }})>
+            <th>{{ article[0] }}</th>
+            <th>{{ article[2] }}</th>
+            <th>{{ article[1] }}</th>
+        </tr>
+    {% endfor %}
+
+    {% if articles %}
+        </table>
+    {% else %}
+        <p class="error_search">Désolé, il n'y a pas d'article contenant le mot: {{ keyword }}.</p>
+    {% endif %}
+
+</div>
+{% endblock %}

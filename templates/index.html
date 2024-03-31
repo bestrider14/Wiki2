@@ -9,7 +9,7 @@
                 <a href="/"><img src="{{url_for('static', filename='images/logo.png')}}" class="logo" alt="logo"></a>
 
                 <ul class="nav-links">
-                    <li>Bienvenue {{ session['userName']}}</li>
+                    {% if session['userId'] %}<li>Bienvenue {{ session['userName']}}</li>{% endif %}
                     <li><a href="/">Accueil</a></li>
                     <li><a href="{{ url_for('articles') }}" onclick="location.href=this.href+'?letter=A';return false;">Liste Articles</a></li>
                     <li><a href="{{ url_for('random') }}">Article Aléatoire</a></li>
@@ -27,9 +27,9 @@
         {% block body %}
         <div class="content_center">
             <h1>Bienvenue sur Wiki²</h1>
-            <form>
-                    <input type="text" placeholder="&#x270e;   Entrez un mot clé" id="keyword">
-                    <button type="submit" onclick="findArticle()">Trouver un article</button>
+            <form name="search_form" action="/search" method="post">
+                    <input type="text" placeholder="&#x270e;   Entrez un mot clé" name="keyword">
+                    <button type="submit">Trouver un article</button>
             </form>
         </div>
         {% endblock %}
