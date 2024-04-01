@@ -14,6 +14,14 @@
     position: relative;
 }
 
+.orange{
+    color: #ff3d00;
+}
+
+textarea {
+  resize: none;
+}
+
 nav{
     display: flex;
     align-items: center;
@@ -85,7 +93,7 @@ nav{
     padding: 10px;
     border-radius: 8px;
     display: flex;
-margin-left: auto;
+    margin-left: auto;
     margin-right: auto;
     width: 50%;
 }
@@ -109,13 +117,12 @@ margin-left: auto;
 
 .inscription_form {
     display: flex;
-    flex-direction: column; /* Stack inputs vertically */
-    align-items: center; /* Center-align flex items */
-    gap: 10px; /* Space between form items */
-    /* Any other styles you want to override or add */
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
-.inscription_form inputForm{
+.inscription_form{
     border-color: #080008;
 }
 
@@ -135,8 +142,9 @@ input:valid {
     position: absolute;
     margin: auto;
     padding-top: 20px;
-    height: 90vh;
+    height: auto;
     width: 100%;
+    min-height: 90vh;
     text-align: center;
     color: white;
     background: #080008;
@@ -245,4 +253,46 @@ input:valid {
 .error_search{
     padding-top: 20px;
 }
+
+.commentaires{
+    text-align: left;
+    width: 88%;
+    margin: auto;
+    padding-top: 30px;
+    height: auto;
+}
+
+.commentaires p{
+    padding-top: 5px;
+}
+
+.commentaires h2{
+    margin-bottom:  10px;
+}
+
+.commentaires form{
+    width: 40%;
+    margin-bottom: 10px;
+}
+
+.commentaires textarea{
+    background-color:  #080810;
+    color: white;
+    border-radius: 5px;
+}
+
+.block_commentaire{
+    margin-top: 15px;
+}
+
+.content form button{
+    background: #ff3d00;
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: "poppins", sans-serif;
+}
+
 

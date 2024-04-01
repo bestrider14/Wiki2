@@ -1,4 +1,4 @@
-import bcrypt
+from datetime import datetime
 import pymysql
 import os
 from dotenv import load_dotenv
@@ -123,3 +123,58 @@ class Database:
         self.cursor.execute(statement, data)
         return self.cursor.fetchone()
 
+    def get_info_commentaires(self, idarticle):
+        statement = (f"SELECT messages.contenu, messages.horodatage, utilisateurs.nom "
+                     f"FROM messages INNER JOIN utilisateurs ON messages.idUtilisateur = utilisateurs.idUtilisateur "
+                     f"WHERE messages.idArticle = %s ORDER BY messages.horodatage DESC;")
+        data = idarticle
+        self.cursor.execute(statement, data)
+
+        liste = [list(x) for x in self.cursor.fetchall()]
+
+        for x in liste:
+            seconds = (datetime.today() - x[1]).total_seconds()
+            x[1] = f"1 seconde"
+            if seconds > 31536000:
+                time = seconds // 31536000
+                if time == 1:
+                    x[1] = f"{time:.0f} an"
+                else:
+                    x[1] = f"{time:.0f} ans"
+            elif seconds > 86400:
+                time = seconds // 86400
+                if time == 1:
+                    x[1] = f"{time:.0f} jour"
+                else:
+                    x[1] = f"{time:.0f} jours"
+            elif seconds > 3600:
+                time = seconds // 3600
+                if time == 1:
+                    x[1] = f"{time:.0f} heure"
+                else:
+                    x[1] = f"{time:.0f} heures"
+            elif seconds > 60:
+                time = seconds // 60
+                if time == 1:
+                    x[1] = f"{time:.0f} minute"
+                else:
+                    x[1] = f"{time:.0f} minutes"
+            elif seconds > 1:
+                time = seconds
+                if time == 1:
+                    x[1] = f"{time:.0f} seconde"
+                else:
+                    x[1] = f"{time:.0f} secondes"
+        return liste
+
+    def add_comment(self, articleid, userid, comment):
+        statement = f"INSERT INTO messages (contenu, horodatage, idArticle, idUtilisateur) VALUES (%s, NOW(), %s, %s);"
+        data = comment, articleid, userid
+
+        try:
+            self.cursor.execute(statement, data)
+            return True
+
+        except pymysql.MySQLError as e:
+            print(e)
+            return False

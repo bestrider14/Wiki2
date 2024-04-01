@@ -1,3 +1,5 @@
+
+
 from flask import Flask, render_template, Response, request, jsonify, session, redirect, url_for, flash
 from database import Database
 import os
@@ -7,9 +9,20 @@ app.config['SECRET_KEY'] = os.urandom(24)
 
 database = Database()
 
+# FOR DEBUG ONLY
+autologin = True
+
 
 @app.route("/")
 def index():
+    # FOR DEBUG ONLY
+    if autologin:
+        print("auto login")
+        session["userId"] = 204
+        session["userName"] = "luka".capitalize()
+        session["userEmail"] = "luka"
+        session["userGenre"] = "Masculin"
+        session["userRole"] = 2
     return render_template("index.html")
 
 
@@ -90,15 +103,14 @@ def articles():
 @app.route("/article")
 def article():
     idArticle = request.args.get('id')
-    infoArticle = database.get_article(idArticle)
-    return render_template("article.html", article=infoArticle)
 
+    if idArticle == "Random":
+        idArticle = database.random_id()
 
-@app.route("/random")
-def random():
-    idArticle = database.random_id()
     infoArticle = database.get_article(idArticle)
-    return render_template("article.html", article=infoArticle)
+    infoCommentaires = database.get_info_commentaires(idArticle)
+
+    return render_template("article.html", article=infoArticle, commentaires=infoCommentaires)
 
 
 @app.route("/search", methods=["POST"])
@@ -116,6 +128,15 @@ def checkRole():
         return redirect(url_for("moderateur"))
     if session['userRole'] == 2:
         return redirect(url_for("admin"))
+
+
+@app.route("/add_comment", methods=["POST"])
+def addComment():
+    commentForm = request.form
+    reussi = database.add_comment(commentForm["articleId"], commentForm["userId"], commentForm["comment"])
+    if not reussi:
+        flash("Une erreur est survenue.")
+    return redirect(url_for("article")+"?id="+commentForm["articleId"])
 
 
 @app.route("/up", methods=["POST"])

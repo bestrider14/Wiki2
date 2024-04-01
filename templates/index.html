@@ -12,7 +12,7 @@
                     {% if session['userId'] %}<li>Bienvenue {{ session['userName']}}</li>{% endif %}
                     <li><a href="/">Accueil</a></li>
                     <li><a href="{{ url_for('articles') }}" onclick="location.href=this.href+'?letter=A';return false;">Liste Articles</a></li>
-                    <li><a href="{{ url_for('random') }}">Article Aléatoire</a></li>
+                    <li><a href="{{ url_for('article') }}?id=Random">Article Aléatoire</a></li>
                     {% if session['userId'] %}
                         <li><a href="{{ url_for('checkRole') }}">Gestion compte</a></li>
                         <a href="{{ url_for('logout') }}"><li class="btn">Déconnexion</li></a>

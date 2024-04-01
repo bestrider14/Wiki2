@@ -44,6 +44,8 @@ CREATE TABLE articles(
     FOREIGN KEY (idRef) REFERENCES refs(idReference) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
+CREATE INDEX titre_index ON articles (titre);
+
 CREATE TABLE messages(
     idMessage INT AUTO_INCREMENT,
     contenu TEXT NOT NULL,
@@ -528,7 +530,7 @@ END ;
 -- UNE PROCEDURE POUR SORTIR LES INFORMATIONS IMPORTANTE SUR UN ARTICLE
 CREATE PROCEDURE infoArticle(IN idArticle INT)
 BEGIN
-    SELECT articles.titre, articles.dateCreation, articles.contenu,
+    SELECT articles.idArticle, articles.titre, articles.dateCreation, articles.contenu,
            categories.nom,
            utilisateurs.nom, utilisateurs.idUtilisateur,
            refs.idReference, refs.nomAuteur, refs.titreDocument, refs.anneeParution, refs.ISBN, refs.editeur
