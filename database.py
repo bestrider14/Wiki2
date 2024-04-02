@@ -31,22 +31,6 @@ class Database:
         )
         self.cursor = self.connection.cursor()
 
-    def push_migration(self):
-        migration_to_push = self.migration_counter + 1
-        migration_file = f"db_scripts/migrate_{migration_to_push}.sql"
-
-        run_sql_file(self.cursor, migration_file, accept_empty=False)
-        self.migration_counter += 1
-
-    def rollback(self):
-        if self.migration_counter < 1:
-            raise ValueError("There are no rollbacks in the rollback stack.")
-
-        rollback_file = f"db_scripts/rollback_{self.migration_counter}.sql"
-
-        run_sql_file(self.cursor, rollback_file)
-        self.migration_counter -= 1
-
     def up(self):
         self.drop()
         run_sql_file(self.cursor, "db_scripts/up.sql")
@@ -60,9 +44,6 @@ class Database:
 
     def get_connection(self):
         return self.connection
-
-    def get_migration_stack_size(self):
-        return self.migration_counter
 
     def find_article(self, keyword):
         statement = (f"SELECT articles.titre, articles.dateCreation, utilisateurs.nom, articles.idArticle "
@@ -178,3 +159,11 @@ class Database:
         except pymysql.MySQLError as e:
             print(e)
             return False
+
+    def get_all_email(self):
+        statement = f"SELECT utilisateurs.email FROM utilisateurs;"
+        self.cursor.execute(statement)
+        liste = []
+        for email in self.cursor.fetchall():
+            liste.append(email[0])
+        return liste

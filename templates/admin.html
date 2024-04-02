@@ -1,11 +1,30 @@
 {% extends 'index.html' %}
 {% block body %}
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <div class="content">
-    <h1>Gestion de votre compte: {{ session['userName']}}</h1>
-
-    <button onclick="up()">Créer la base de données</button>
+    <h1>Gestion de votre compte administrateur: {{ session['userName']}}</h1>
+    <br>
+    <form>
+        <button onclick="up()">Créer la base de données</button>
+    </form>
     <span id="up-status"></span>
+    <br>
+    <form name="email_form" action="/register" method="post">
+        <input class="inputForm" name="email" type="email" id="email_autocomplete" placeholder="Chercher un Email" maxlength="250" onfocusout="checkIfUserExists()" required>
+        <button type="submit">Changer</button>
+    </form>
 
-
+    <script>
+        $(function() {
+            $.ajax({
+                url: '{{ url_for("autocomplete") }}'
+                }).done(function (data){
+                    $('#email_autocomplete').autocomplete({
+                        source: data,
+                        minLength: 4
+                    });
+                });
+            });
+    </script>
 </div>
 {% endblock %}

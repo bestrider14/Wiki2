@@ -276,7 +276,7 @@ input:valid {
 }
 
 .commentaires textarea{
-    background-color:  #080810;
+    background-color:  #1c1c26;
     color: white;
     border-radius: 5px;
 }
@@ -285,14 +285,32 @@ input:valid {
     margin-top: 15px;
 }
 
+.content h1{
+    margin-bottom: 25px;
+}
+
 .content form button{
     background: #ff3d00;
     color: white;
-    padding: 15px 40px;
+    padding: 5px 10px;
+    margin-top: 5px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-family: "poppins", sans-serif;
 }
 
+.content form input,select{
+    background-color: #1c1c26 !important;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
 
+.content form input:-webkit-autofill {
+    transition: background-color 5000s ease-in-out 0s;
+    -webkit-text-fill-color: white !important;
+}

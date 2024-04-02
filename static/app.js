@@ -2,7 +2,8 @@ const checkIfUserExists = () => {
     const registrationForm = document.forms['inscription_form']
     const emailFormElement = registrationForm['email']
     const email = emailFormElement.value
-    axios.post('/validate_user_registration', {
+    if (email.length > 0){
+        axios.post('/validate_user_registration', {
         email: email
     }).then((response) => {
         if(response.data.user_exists === "True") {
@@ -18,6 +19,8 @@ const checkIfUserExists = () => {
     }, (error) => {
         console.log(error)
     })
+    }
+
 }
 
 function articleLink(id){

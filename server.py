@@ -1,13 +1,13 @@
-
-
-from flask import Flask, render_template, Response, request, jsonify, session, redirect, url_for, flash
+from flask import Flask, render_template, Response, request, jsonify, session, redirect, url_for, flash, json
 from database import Database
+from wtforms import StringField, Form
 import os
 
 app = Flask(__name__, instance_relative_config=True)
 app.config['SECRET_KEY'] = os.urandom(24)
 
 database = Database()
+
 
 # FOR DEBUG ONLY
 autologin = True
@@ -19,7 +19,7 @@ def index():
     if autologin:
         print("auto login")
         session["userId"] = 204
-        session["userName"] = "luka".capitalize()
+        session["userName"] = "Luka"
         session["userEmail"] = "luka"
         session["userGenre"] = "Masculin"
         session["userRole"] = 2
@@ -43,7 +43,6 @@ def validate_login():
     valideMDP = database.checkMDP(form["email"], form["motDePasse"])
     if valideMDP:
         userInfo = database.getUserInfo(form["email"])
-        print(userInfo)
         session["userId"] = userInfo[0]
         session["userName"] = userInfo[1].capitalize()
         session["userEmail"] = userInfo[2]
@@ -89,8 +88,7 @@ def moderateur():
 
 @app.route("/admin")
 def admin():
-    migration_state = database.get_migration_stack_size()
-    return render_template("admin.html", migration_state=migration_state)
+    return render_template("admin.html")
 
 
 @app.route("/articles")
@@ -136,7 +134,7 @@ def addComment():
     reussi = database.add_comment(commentForm["articleId"], commentForm["userId"], commentForm["comment"])
     if not reussi:
         flash("Une erreur est survenue.")
-    return redirect(url_for("article")+"?id="+commentForm["articleId"])
+    return redirect(url_for("article") + "?id=" + commentForm["articleId"])
 
 
 @app.route("/up", methods=["POST"])
@@ -147,6 +145,12 @@ def up():
     except Exception as e:
         print(e)
         return Response(status=406)
+
+
+@app.route('/_autocomplete', methods=['GET'])
+def autocomplete():
+    email = database.get_all_email()
+    return Response(json.dumps(email), mimetype='application/json')
 
 
 if __name__ == '__main__':

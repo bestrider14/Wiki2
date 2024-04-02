@@ -3,14 +3,14 @@
     <div class="content">
     <h1>Inscription</h1>
     <form name="inscription_form" action="/register" method="post">
-        <input class="inputForm" name="nomUtilisateur" type="text" required pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Entrez un nom d'utilisateur" maxlength="50">
-        <input class="inputForm" name="email" type="email" placeholder="&#x270e;   Entrez votre email" maxlength="250" onfocusout="checkIfUserExists()" required>
-        <input class="inputForm" name="motDePasse" type="password" placeholder="&#x270e;   Entrez votre mot de passe" required>
-        <select id="selectGenre" name="genre" required>
+        <input class="inputForm" name="nomUtilisateur" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Entrez un nom d'utilisateur" maxlength="50" required><br>
+        <input class="inputForm" name="email" type="email" placeholder="&#x270e;   Entrez votre email" maxlength="250" onfocusout="checkIfUserExists()" required><br>
+        <input class="inputForm" name="motDePasse" type="password" placeholder="&#x270e;   Entrez votre mot de passe" required><br>
+        <select id="selectGenre" name="genre" required><br>
             <option value="masculin">Masculin</option>
             <option value="feminin">Féminin</option>
             <option value="autre">Autre</option>
-        </select>
+        </select><br>
         <button type="submit">S'inscrire</button>
     </form>
 </div>
