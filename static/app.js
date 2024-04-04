@@ -32,3 +32,10 @@ function clearInput(element) {
         element.value = "";
     }
 }
+
+function changeUsername() {
+    var newUsername = prompt("Enter your new username:");
+    if (newUsername !== null && newUsername !== "") {
+        document.getElementById("username").textContent = newUsername;
+    }
+}

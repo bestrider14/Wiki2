@@ -168,8 +168,15 @@ class Database:
             liste.append(email[0])
         return liste
 
-    def update_email(self):
-        statement = f"UPDATE utilisateurs SET email = {{ session['userName']}} WHERE id = {{ session['userID']}};"
-        self.cursor.execute(statement)
+    def update_profile(self, nom, id):
+        statement = f"UPDATE utilisateurs SET nom = %s WHERE idUtilisateur = %s;"
+        data = nom, id
+        self.cursor.execute(statement, data)
 
-        return "Modification du email réussi: "
+        return "Modification du nom d'utilisateur réussi"
+
+    def update_password(self, motDePasse, id):
+        statement = "UPDATE utilisateurs SET motDePasse = md5(%s) WHERE idUtilisateur = %s;"
+        data = motDePasse, id
+        self.cursor.execute(statement, data)
+        return "Modification du mot de passe réussi"

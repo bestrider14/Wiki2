@@ -10,7 +10,7 @@ database = Database()
 
 
 # FOR DEBUG ONLY
-autologin = True
+autologin = False
 
 
 @app.route("/")
@@ -22,7 +22,7 @@ def index():
         session["userName"] = "luka"
         session["userEmail"] = "Test1@mail.com"
         session["userGenre"] = "Masculin"
-        session["userRole"] = 2
+        session["userRole"] = 0
     return render_template("index.html")
 
 
@@ -152,6 +152,26 @@ def autocomplete():
     email = database.get_all_email()
     return Response(json.dumps(email), mimetype='application/json')
 
+@app.route('/update_profile', methods=['POST'])
+def update_name():
+    try:
+        nameForm = request.form
+        user = nameForm["username"]
+        database.update_profile(user, session["userId"])
+    except Exception as e:
+        flash(str(e))
+    session["userName"] = user
+    return redirect(url_for("user"))
+
+@app.route('/update_password', methods=['POST'])
+def update_password():
+    mdpForm = request.form
+    password = mdpForm["password"]
+    database.update_password(password, session["userId"])
+    return redirect(url_for("user"))
+
+
 
 if __name__ == '__main__':
     app.run()
+

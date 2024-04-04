@@ -1,20 +1,23 @@
 {% extends 'index.html' %}
 {% block body %}
 <div class="content">
-    <h1>Gestion de votre compte {{ session['userName']}}</h1>
+    <br><h1>Gestion de votre compte {{ session['userName']}}</h1>
+    <p> Votre email pour ce compte: {{ session['userEmail']}}</p><br><br><br>
+     <h2>Modifiez vos données de connexion</h2><br><br>
 
-    <form id="profileForm" action="/update_profile" method="POST">
+    <form name="profileForm" action="/update_profile" method="POST">
     <label for="username">Nom d'utilisateur: {{ session['userName']}}</label><br>
-    <input type="text" id="username" value="Nouveau nom d'utilisateur" onInput="clearInput(this)"><br><br><br>
+    <input type="text" id="username" name="username" placeholder="Nouveau nom d'utilisateur" oninput="clearPlaceholder(this)"><br>
 
-    <label for="email">Email:</label><br>
-    Nouveau email:<input type="email" id="email" name="email" value="utilisateur@exemple.com"><br><br><br>
+    <button type="submit">Sauvegarder le nom d'utilisateur</button><br><br><br><br>
+    </form>
 
+
+    <form name="mdpForm" action="/update_password" method="POST">
     <label for="password">Mot de passe:</label><br>
-    <input type="password" id="password" name="password" placeholder="Mot de passe"><br><br>
+    <input type="password" id="password" name="password" placeholder="Nouveau mot de passe"><br>
 
-
-    <button type="submit">Sauvegarder les changements</button>
+    <button type="submit">Sauvegarder le mot de passe</button>
     </form>
 </div>
 {% endblock %}
