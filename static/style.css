@@ -315,6 +315,14 @@ input:valid {
     -webkit-text-fill-color: white !important;
 }
 
+.block_gestion{
+    margin-bottom: 40px;
+}
+
+.block_gestion h2{
+    margin-bottom: 10px;
+}
+
 .update_profile{
     display: flex;
     flex-direction: column;
