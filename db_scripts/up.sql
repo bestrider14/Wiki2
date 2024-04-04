@@ -69,6 +69,7 @@ CREATE TABLE edit(
     FOREIGN KEY (idUtilisateur) REFERENCES utilisateurs(idUtilisateur) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
+
 INSERT INTO `categories` (`idCategorie`, `nom`, `idCategorieParent`) VALUES (1, 'corrupti', NULL);
 INSERT INTO `categories` (`idCategorie`, `nom`, `idCategorieParent`) VALUES (2, 'atque', 1);
 INSERT INTO `categories` (`idCategorie`, `nom`, `idCategorieParent`) VALUES (3, 'et', 1);
@@ -546,3 +547,5 @@ CREATE PROCEDURE compMDP (IN emailIn VARCHAR(255), IN mdpIn VARCHAR(255))
     BEGIN
         SELECT COUNT(*) FROM utilisateurs WHERE utilisateurs.email = emailIn AND utilisateurs.motDePasse = MD5(mdpIn);
     END;
+
+

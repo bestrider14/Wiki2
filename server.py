@@ -8,7 +8,6 @@ app.config['SECRET_KEY'] = os.urandom(24)
 
 database = Database()
 
-
 # FOR DEBUG ONLY
 autologin = False
 
@@ -19,10 +18,10 @@ def index():
     if autologin:
         print("auto login")
         session["userId"] = 204
-        session["userName"] = "luka"
-        session["userEmail"] = "Test1@mail.com"
+        session["userName"] = "Johny"
+        session["userEmail"] = "jb@gmail.com"
         session["userGenre"] = "Masculin"
-        session["userRole"] = 0
+        session["userRole"] = 2
     return render_template("index.html")
 
 
@@ -128,6 +127,12 @@ def checkRole():
         return redirect(url_for("admin"))
 
 
+@app.route("/creeArticle")
+def creeArticle():
+    categories = database.get_all_categories()
+    return render_template("creeArticle.html", categories=categories)
+
+
 @app.route("/add_comment", methods=["POST"])
 def addComment():
     commentForm = request.form
@@ -152,6 +157,7 @@ def autocomplete():
     email = database.get_all_email()
     return Response(json.dumps(email), mimetype='application/json')
 
+
 @app.route('/update_profile', methods=['POST'])
 def update_name():
     try:
@@ -163,6 +169,7 @@ def update_name():
     session["userName"] = user
     return redirect(url_for("user"))
 
+
 @app.route('/update_password', methods=['POST'])
 def update_password():
     mdpForm = request.form
@@ -171,7 +178,5 @@ def update_password():
     return redirect(url_for("user"))
 
 
-
 if __name__ == '__main__':
     app.run()
-

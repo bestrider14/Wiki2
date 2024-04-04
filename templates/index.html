@@ -15,7 +15,9 @@
                     <li><a href="{{ url_for('article') }}?id=Random">Article Aléatoire</a></li>
                     {% if session['userId'] %}
                         <li><a href="{{ url_for('checkRole') }}">Gestion compte</a></li>
+                        <li><a href="{{ 'creeArticle' }}">Créer un article</a></li>
                         <a href="{{ url_for('logout') }}"><li class="btn">Déconnexion</li></a>
+
                     {% else %}
                         <li><a href="{{ url_for('register') }}">Inscription</a></li>
                         <a href="{{ url_for('login') }}"><li class="btn">Connexion</li></a>

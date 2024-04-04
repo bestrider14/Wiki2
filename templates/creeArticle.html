@@ -1,0 +1,34 @@
+{% extends 'index.html' %}
+
+{% block body %}
+
+    <div class="content">
+    <h1>Créer un article</h1>
+    <form name="inscription_form" action="/register" method="post">
+        <input class="inputForm" name="titre" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Titre" maxlength="50" required><br>
+        <input class="inputForm" name="categorie" type="email" placeholder="&#x270e;   Catégorie" maxlength="250" onfocusout="checkIfUserExists()" required><br>
+        <label>
+            Sélectionnez la catégorie parente. <br>
+            <select name="category">
+                {% for category in categories %}
+                <option value="{{ category[0] }}">{{ category[0] }}</option>
+                {% endfor %}
+            </select>
+        </label><br>
+        <label for="contenu">Écrivez le contenu de votre article ici.<br>
+            <textarea id="contenu" name="contenuArticle" rows="15" cols="70">...</textarea><br>
+        </label><br>
+        <button id="ajouterReference" type="button" onclick="addReferenceToCreeArticleUI()">Ajouter une Référence</button><br>
+        <div id="references"></div><br>
+        <button type="submit">Enregistrer</button>
+    </form>
+</div>
+
+
+    <script>
+      // Initialier le compteur de référence quand la page charge
+      let compteurReference = 0;
+    </script>
+
+{% endblock %}
+

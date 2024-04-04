@@ -66,6 +66,12 @@ class Database:
 
         return self.cursor.fetchone()
 
+    def get_all_categories(self):
+        statement = f"SELECT nom FROM categories"
+        self.cursor.execute(statement)
+        result = self.cursor.fetchall()
+        return result
+
     def random_id(self):
         statement = f"SELECT articles.idArticle FROM articles ORDER BY RAND() LIMIT 1;"
         self.cursor.execute(statement)
