@@ -172,7 +172,6 @@ class Database:
         statement = f"UPDATE utilisateurs SET nom = %s WHERE idUtilisateur = %s;"
         data = nom, id
         self.cursor.execute(statement, data)
-
         return "Modification du nom d'utilisateur réussi"
 
     def update_password(self, motDePasse, id):
@@ -180,3 +179,9 @@ class Database:
         data = motDePasse, id
         self.cursor.execute(statement, data)
         return "Modification du mot de passe réussi"
+
+    def delete_account(self, id):
+        statement = "DELETE FROM utilisateurs WHERE idUtilisateur = %s;"
+        data = id
+        self.cursor.execute(statement, data)
+        return "Suppression du compte réussi"

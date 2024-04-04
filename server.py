@@ -10,7 +10,7 @@ database = Database()
 
 
 # FOR DEBUG ONLY
-autologin = False
+autologin = True
 
 
 @app.route("/")
@@ -170,6 +170,18 @@ def update_password():
     database.update_password(password, session["userId"])
     return redirect(url_for("user"))
 
+@app.route('/delete_account', methods=['GET', 'POST'])
+def delete_account():
+    if "userId" not in session:
+        return redirect(url_for("login"))
+    user_delete = session["userId"]
+    database.delete_account(user_delete)
+    session.clear()
+    return redirect(url_for("logout"))
+
+@app.route('/deleted_account')
+def deleted_account():
+    return "Votre compte a bien été supprimé."
 
 
 if __name__ == '__main__':
