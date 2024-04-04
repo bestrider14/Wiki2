@@ -46,3 +46,8 @@ function up()  {
     })
 }
 
+function clearInput(element) {
+    if (element.value === "Example Text") {
+        element.value = "";
+    }
+}

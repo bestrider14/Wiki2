@@ -19,10 +19,10 @@ def index():
     if autologin:
         print("auto login")
         session["userId"] = 204
-        session["userName"] = "Luka"
-        session["userEmail"] = "luka"
+        session["userName"] = "Test1"
+        session["userEmail"] = "Test1@mail.com"
         session["userGenre"] = "Masculin"
-        session["userRole"] = 2
+        session["userRole"] = 0
     return render_template("index.html")
 
 
@@ -87,6 +87,7 @@ def moderateur():
 
 
 @app.route("/admin")
+
 def admin():
     return render_template("admin.html")
 

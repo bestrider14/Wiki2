@@ -167,3 +167,9 @@ class Database:
         for email in self.cursor.fetchall():
             liste.append(email[0])
         return liste
+
+    def update_email(self):
+        statement = f"UPDATE utilisateurs SET email = {{ session['userName']}} WHERE id = {{ session['userID']}};"
+        self.cursor.execute(statement)
+
+        return "Modification du email réussi: "
