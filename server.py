@@ -19,10 +19,10 @@ def index():
     if autologin:
         print("auto login")
         session["userId"] = 204
-        session["userName"] = "Test1"
+        session["userName"] = "luka"
         session["userEmail"] = "Test1@mail.com"
         session["userGenre"] = "Masculin"
-        session["userRole"] = 0
+        session["userRole"] = 2
     return render_template("index.html")
 
 
@@ -87,7 +87,6 @@ def moderateur():
 
 
 @app.route("/admin")
-
 def admin():
     return render_template("admin.html")
 
@@ -138,14 +137,14 @@ def addComment():
     return redirect(url_for("article") + "?id=" + commentForm["articleId"])
 
 
-@app.route("/up", methods=["POST"])
+@app.route("/up")
 def up():
     try:
         database.up()
-        return Response(status=200)
+        flash("Création de la base de données réussi!")
     except Exception as e:
-        print(e)
-        return Response(status=406)
+        flash(str(e))
+    return redirect(url_for("admin"))
 
 
 @app.route('/_autocomplete', methods=['GET'])

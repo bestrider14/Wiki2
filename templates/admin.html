@@ -7,7 +7,7 @@
     <div class="block_gestion">
         <h2>Gestion des utilisateurs</h2>
         <form name="email_form" action="/register" method="post">
-            <!-- <input class="inputForm" name="email" type="email" id="email_autocomplete" placeholder="Chercher un Email" maxlength="250" onfocusout="checkIfUserExists()" required> -->
+            <input class="inputForm" name="email" type="email" id="email_autocomplete" placeholder="Chercher un Email" maxlength="250" onfocusout="checkIfUserExists()" required>
             <select id="selectGenre" name="genre" required>
                 <option value="masculin">Utilisateur</option>
                 <option value="feminin">Modératreur</option>
@@ -21,13 +21,22 @@
 
     <div class="block_gestion">
         <h2>Gestion de la base de données</h2>
-        <form>
-            <button onclick="up()">Créer la base de données</button>
+        <form action="/up">
+            <button>Créer la base de données</button>
         </form>
-        <span id="up-status"></span>
+        <br>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashed">
+                    {% for message in messages %}
+                        <li class="orange">{{message}}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
     </div>
 
-<!--
+
     <script>
         $(function() {
             $.ajax({
@@ -39,6 +48,6 @@
                     });
                 });
             });
-    </script> -->
+    </script>
 </div>
 {% endblock %}
