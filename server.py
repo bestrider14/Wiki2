@@ -1,5 +1,6 @@
 from flask import Flask, render_template, Response, request, jsonify, session, redirect, url_for, flash, json
 from database import Database
+from datetime import date
 from wtforms import StringField, Form
 import os
 
@@ -132,39 +133,36 @@ def creeArticle():
     categories = database.get_all_categories()
     return render_template("creeArticle.html", categories=categories)
 
+
 @app.route("/creeArticle", methods=['POST'])
 def soumettreArticle():
+    if 'userID' in session:
+        userID = session['userID']
+    else:
+        return redirect(url_for('login'))
 
-    titre = request.form["titre"]
-    categorie = request.form["categorie"]
-    categorieParente = request.form["categorieParente"]
-    contenu = request.form["contenuArticle"]
-    try:
-        compteurReference = int(request.form.get("referenceCount", 0))
-    except ValueError:
-        compteurReference = 0
+    contenuArticle = {
+        'titre': request.form["titreArticle"],
+        'contenu': request.form["contenuArticle"],
+        'dateCreation': date.today().isoformat(),
+        # Il faut avoir l'idCategorie, pas juste la catégorie... faire une requête database
+        'categorie': request.form["categorie"],
+        'categorieParente': request.form["categorieParente"],
+        'idCreateur': userID,
+    }
 
-    references = []
+    references = {
+        'titre': request.form["titreReference"],
+        'auteur': request.form["auteur"],
+        'annee': request.form["anneeParution"],
+        'isbn': request.form["isbn"],
+        'editeur': request.form["editeur"]
+    }
 
-    if compteurReference:
-        for i in range(compteurReference):
-            cle = f'auteur[{i}]'
-            auteur = request.form[cle]
-            cle = f'titre[{i}]'
-            titre = request.form[cle]
-            cle = f'anneeParution[{i}]'
-            anneeParution = request.form[cle]
-            cle = f'isbn[{i}]'
-            isbn = request.form[cle]
-            cle = f'editeur[{i}]'
-            editeur = request.form[cle]
-            references.append({'auteur': auteur, 'titre': titre, 'anneeParution': anneeParution, 'isbn': isbn, 'editeur': editeur})
-    print(references)
-    print(len(references))
-    #getuserID
+    # print(contenuArticle)
+    # print(references)
 
     return redirect(url_for('index'))
-
 
 
 @app.route("/add_comment", methods=["POST"])
@@ -211,6 +209,7 @@ def update_password():
     database.update_password(password, session["userId"])
     return redirect(url_for("user"))
 
+
 @app.route('/delete_account', methods=['GET', 'POST'])
 def delete_account():
     if "userId" not in session:
@@ -220,9 +219,11 @@ def delete_account():
     session.clear()
     return redirect(url_for("logout"))
 
+
 @app.route('/deleted_account')
 def deleted_account():
     return "Votre compte a bien été supprimé."
+
 
 if __name__ == '__main__':
     app.run()

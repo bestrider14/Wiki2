@@ -5,7 +5,7 @@
     <div class="content">
     <h1>Créer un article</h1>
     <form name="inscription_form" action="{{ url_for('soumettreArticle') }}" method="post">
-        <input class="inputForm" name="titre" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Titre" maxlength="50" required><br>
+        <input class="inputForm" name="titreArticle" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Titre" maxlength="50" required><br>
         <input class="inputForm" name="categorie" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Catégorie" maxlength="50" required><br>
         <label>
             Sélectionnez la catégorie parente. <br>
@@ -18,8 +18,16 @@
         <label for="contenu">Écrivez le contenu de votre article ici.<br><br>
             <textarea id="contenu" name="contenuArticle" rows="15" cols="70">...</textarea><br>
         </label><br>
-        <button id="ajouterReference" type="button" onclick="addReferenceToCreeArticleUI()">Ajouter une Référence</button><br>
-        <input type="hidden" name="referenceCount" id="referenceCount" value=compteurReference>
+        <label>
+            Saisir une référence : <br>
+            <input class="inputForm" name="titreReference" type="text" placeholder="Titre"><br>
+            <input class="inputForm" name="auteur" type="text" placeholder="Auteur"><br>
+            <input class="inputForm" name="anneeParution" type="number" placeholder="Année de parution" min="0" max=maxYear><br>
+            <label for="contenu">ISBN : 10 ou 13 caractères<br>
+                <input class="inputForm" name="isbn" type="text" placeholder="ISBN" pattern="\d{10}|\d{13}"><br>
+            </label>
+            <input class="inputForm" name="editeur" type="text" placeholder="Editeur"><br>
+        </label>
         <div id="references"></div><br>
         <button type="submit">Enregistrer</button>
     </form>
@@ -27,8 +35,8 @@
 
 
     <script>
-      // Initialier le compteur de référence quand la page charge
-      let compteurReference = 0;
+      const maxYear = new Date().getFullYear();
+
     </script>
 
 {% endblock %}

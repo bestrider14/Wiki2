@@ -18,15 +18,15 @@ CREATE TABLE categories(
     FOREIGN KEY (idCategorieParent) REFERENCES categories(idCategorie) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
-CREATE TABLE refs(
-    idReference INT AUTO_INCREMENT,
-    nomAuteur VARCHAR(255) NOT NULL,
-    titreDocument VARCHAR(255) NOT NULL,
-    anneeParution YEAR NOT NULL,
-    ISBN BIGINT NOT NULL UNIQUE,
-    editeur VARCHAR(255) NOT NULL,
+CREATE TABLE refs (
+  idReference INT AUTO_INCREMENT,
+  nomAuteur VARCHAR(255) NOT NULL,
+  titreDocument VARCHAR(255) NOT NULL,
+  anneeParution YEAR NOT NULL,
+  ISBN VARCHAR(14),
+  editeur VARCHAR(255) NOT NULL,
 
-    PRIMARY KEY (idReference)
+  PRIMARY KEY (idReference)
 );
 
 CREATE TABLE articles(
