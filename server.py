@@ -9,7 +9,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 database = Database()
 
 # FOR DEBUG ONLY
-autologin = True
+autologin = False
 
 
 @app.route("/")
@@ -21,7 +21,7 @@ def index():
         session["userName"] = "Johny"
         session["userEmail"] = "jb@gmail.com"
         session["userGenre"] = "Masculin"
-        session["userRole"] = 2
+        session["userRole"] = 1
     return render_template("index.html")
 
 
