@@ -49,24 +49,20 @@ function addReferenceToCreeArticleUI(){
     nouvelleReference.id = `reference${compteurReference}`;
     nouvelleReference.classList.add('uneReference');
 
-    //pour ajouter des sauts de ligne
-    const br = document.createElement("br");
-
     //nomAuteur
     const nomAuteurInput = document.createElement("input");
     nomAuteurInput.type ='text';
     nomAuteurInput.name =`auteur[${compteurReference}]`;
     nomAuteurInput.placeholder = 'Auteur';
     nouvelleReference.appendChild(nomAuteurInput);
-    nouvelleReference.appendChild(br);
     
     //titreDocument
     const titreInput = document.createElement("input");
     titreInput.type ='text';
     titreInput.name =`titre[${compteurReference}]`;
+    console.log(titreInput.name)
     titreInput.placeholder = 'Titre';
     nouvelleReference.appendChild(titreInput);
-    nouvelleReference.appendChild(br);
 
     //anneeParution
     const anneParutionInput = document.createElement("input");
@@ -77,7 +73,6 @@ function addReferenceToCreeArticleUI(){
     anneParutionInput.name =`anneeParution[${compteurReference}]`;
     anneParutionInput.placeholder = 'Année de Parution';
     nouvelleReference.appendChild(anneParutionInput);
-    nouvelleReference.appendChild(br);
     
     //ISBN
     const isbnInput = document.createElement('input');
@@ -86,7 +81,6 @@ function addReferenceToCreeArticleUI(){
     isbnInput.placeholder = "Entrez le ISBN"
     isbnInput.required = false;
     nouvelleReference.appendChild(isbnInput);
-    nouvelleReference.appendChild(br);
     
     //editeur
     const editeurInput = document.createElement("input");
@@ -94,11 +88,11 @@ function addReferenceToCreeArticleUI(){
     editeurInput.name =`editeur[${compteurReference}]`;
     editeurInput.placeholder = 'Éditeur';
     nouvelleReference.appendChild(editeurInput);
-    nouvelleReference.appendChild(br);
 
 
     document.getElementById('references').appendChild(nouvelleReference);
     //incrémenter le compteur de références
     compteurReference++;
+    document.getElementById('referenceCount').value = compteurReference;
     //console.log("Current value of compteurReference:", compteurReference);
 }

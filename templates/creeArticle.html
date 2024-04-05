@@ -4,14 +4,14 @@
 
     <div class="content">
     <h1>Créer un article</h1>
-    <form name="inscription_form" action="/register" method="post">
+    <form name="inscription_form" action="{{ url_for('soumettreArticle') }}" method="post">
         <input class="inputForm" name="titre" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Titre" maxlength="50" required><br>
-        <input class="inputForm" name="categorie" type="email" placeholder="&#x270e;   Catégorie" maxlength="250" onfocusout="checkIfUserExists()" required><br>
+        <input class="inputForm" name="categorie" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Catégorie" maxlength="50" required><br>
         <label>
             Sélectionnez la catégorie parente. <br>
-            <select name="category">
-                {% for category in categories %}
-                <option value="{{ category[0] }}">{{ category[0] }}</option>
+            <select name="categorieParente">
+                {% for categorie in categories %}
+                <option value="{{ categorie[0] }}">{{ categorie[0] }}</option>
                 {% endfor %}
             </select>
         </label><br>
@@ -19,6 +19,7 @@
             <textarea id="contenu" name="contenuArticle" rows="15" cols="70">...</textarea><br>
         </label><br>
         <button id="ajouterReference" type="button" onclick="addReferenceToCreeArticleUI()">Ajouter une Référence</button><br>
+        <input type="hidden" name="referenceCount" id="referenceCount" value=compteurReference>
         <div id="references"></div><br>
         <button type="submit">Enregistrer</button>
     </form>

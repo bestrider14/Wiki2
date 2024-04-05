@@ -127,10 +127,44 @@ def checkRole():
         return redirect(url_for("admin"))
 
 
-@app.route("/creeArticle")
+@app.route("/creeArticle", methods=['GET'])
 def creeArticle():
     categories = database.get_all_categories()
     return render_template("creeArticle.html", categories=categories)
+
+@app.route("/creeArticle", methods=['POST'])
+def soumettreArticle():
+
+    titre = request.form["titre"]
+    categorie = request.form["categorie"]
+    categorieParente = request.form["categorieParente"]
+    contenu = request.form["contenuArticle"]
+    try:
+        compteurReference = int(request.form.get("referenceCount", 0))
+    except ValueError:
+        compteurReference = 0
+
+    references = []
+
+    if compteurReference:
+        for i in range(compteurReference):
+            cle = f'auteur[{i}]'
+            auteur = request.form[cle]
+            cle = f'titre[{i}]'
+            titre = request.form[cle]
+            cle = f'anneeParution[{i}]'
+            anneeParution = request.form[cle]
+            cle = f'isbn[{i}]'
+            isbn = request.form[cle]
+            cle = f'editeur[{i}]'
+            editeur = request.form[cle]
+            references.append({'auteur': auteur, 'titre': titre, 'anneeParution': anneeParution, 'isbn': isbn, 'editeur': editeur})
+    print(references)
+    print(len(references))
+    #getuserID
+
+    return redirect(url_for('index'))
+
 
 
 @app.route("/add_comment", methods=["POST"])

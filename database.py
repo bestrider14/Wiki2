@@ -191,3 +191,7 @@ class Database:
         data = id
         self.cursor.execute(statement, data)
         return "Suppression du compte réussi"
+
+    #def ajouter_article(self, titre, categorie, categorie_parente, contenu, references):
+
+        #statement = "INSERT INTO articles (`titre`, contenu, `dateCreation`, `idCategorie`, `idCreateur`, `idRef`) VALUES (
