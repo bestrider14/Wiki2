@@ -21,7 +21,7 @@ def index():
         session["userName"] = "Johny"
         session["userEmail"] = "jb@gmail.com"
         session["userGenre"] = "Masculin"
-        session["userRole"] = "moderateur"
+        session["userRole"] = "administrateur"
     return render_template("index.html")
 
 
@@ -175,8 +175,15 @@ def addComment():
     return redirect(url_for("article") + "?id=" + commentForm["articleId"])
 
 
-@app.route("/up")
+@app.route("/up", methods=["POST"])
 def up():
+    if 'userRole' not in session:
+        flash("Vous devez être connecté pour faire cette action")
+        return redirect(url_for("login"))
+
+    if session['userRole'] != 'administrateur':
+        flash("Vous devez être administrateur pour faire cette action")
+        return redirect(url_for("admin"))
 
     try:
         database.up()
