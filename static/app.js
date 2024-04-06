@@ -2,6 +2,7 @@
 //variable globale pour compt
 
 const checkIfUserExists = () => {
+    data.user_exists = undefined;
     const registrationForm = document.forms['inscription_form']
     const emailFormElement = registrationForm['email']
     const email = emailFormElement.value
@@ -26,6 +27,39 @@ const checkIfUserExists = () => {
 
 }
 
+const checkUserRole = () => {
+    const updateForm = document.forms['update_user']
+    const emailFormElement = updateForm['email']
+    const email = emailFormElement.value
+    if (email.length > 0){
+        axios.post('/get_user_role', {
+        email: email
+    }).then((response) => {
+        document.getElementById("selectRole").value = response.data.user_role;
+    }, (error) => {
+        console.log(error)
+    })
+    }
+}
+
+function confirmDelete() {
+    var confirmed = confirm("Êtes-vous certain de vouloir supprimer votre compte?");
+    if (confirmed) {
+        document.getElementById("deleteForm").submit();
+    } else {
+        return false;
+    }
+}
+
+function confirmUp() {
+    var confirmed = confirm("Êtes-vous certain refaire la basse de données");
+    if (confirmed) {
+        document.getElementById("upForm").submit();
+    } else {
+        return false;
+    }
+}
+
 function articleLink(id){
     window.location.href = "/article?id="+id;
 }
@@ -37,7 +71,7 @@ function clearInput(element) {
 }
 
 function changeUsername() {
-    var newUsername = prompt("Enter your new username:");
+    const newUsername = prompt("Enter your new username:");
     if (newUsername !== null && newUsername !== "") {
         document.getElementById("username").textContent = newUsername;
     }

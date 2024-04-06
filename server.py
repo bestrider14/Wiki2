@@ -1,6 +1,6 @@
 from flask import Flask, render_template, Response, request, jsonify, session, redirect, url_for, flash, json
 from database import Database
-from wtforms import StringField, Form
+from datetime import date
 import os
 
 app = Flask(__name__, instance_relative_config=True)
@@ -21,7 +21,7 @@ def index():
         session["userName"] = "Johny"
         session["userEmail"] = "jb@gmail.com"
         session["userGenre"] = "Masculin"
-        session["userRole"] = 1
+        session["userRole"] = "moderateur"
     return render_template("index.html")
 
 
@@ -119,12 +119,14 @@ def search():
 
 @app.route("/checkRole")
 def checkRole():
-    if session['userRole'] == 0:
-        return redirect(url_for("user"))
-    if session['userRole'] == 1:
-        return redirect(url_for("moderateur"))
-    if session['userRole'] == 2:
-        return redirect(url_for("admin"))
+    if "userRole" in session:
+        if session['userRole'] == 'utilisateur':
+            return redirect(url_for("user"))
+        if session['userRole'] == 'moderateur':
+            return redirect(url_for("moderateur"))
+        if session['userRole'] == 'administrateur':
+            return redirect(url_for("admin"))
+    return redirect(url_for("login"))
 
 
 @app.route("/creeArticle", methods=['GET'])
@@ -135,56 +137,31 @@ def creeArticle():
 
 @app.route("/creeArticle", methods=['POST'])
 def soumettreArticle():
-    #Récupérer l'ID de l'utilisateur
     if 'userID' in session:
         userID = session['userID']
     else:
         return redirect(url_for('login'))
 
-    reference = {
-        'auteur': request.form["auteur"],
+    contenuArticle = {
+        'titre': request.form["titreArticle"],
+        'contenu': request.form["contenuArticle"],
+        'dateCreation': date.today().isoformat(),
+        # Il faut avoir l'idCategorie, pas juste la catégorie... faire une requête database
+        'categorie': request.form["categorie"],
+        'categorieParente': request.form["categorieParente"],
+        'idCreateur': userID,
+    }
+
+    references = {
         'titre': request.form["titreReference"],
-        'anneeParution': request.form["anneeParution"],
+        'auteur': request.form["auteur"],
+        'annee': request.form["anneeParution"],
         'isbn': request.form["isbn"],
         'editeur': request.form["editeur"]
     }
 
-    article = {
-        'titre': request.form["titreArticle"],
-        'contenu': request.form["contenuArticle"],
-        # Il faut avoir l'idCategorie, pas juste la catégorie... faire une requête database
-        'nomCategorie': request.form["categorie"],
-        'nomCategorieParente': request.form["categorieParente"],
-        'userID': userID,
-    }
-
-    #trouver l'id de la categorie parente
-    try:
-        idCategorieParent = database.get_categorie_id(article['nomCategorieParente'])
-        if not idCategorieParent:
-            throw = Exception("CategorieParente n'existe pas de categorie")
-        article['idCategorieParente'] = idCategorieParent
-    except Exception as e:
-        print(f"La catégorie parente n'existe pas {e}")
-
-    #Récupérer l'id de la catégorie de l'article
-    idCategorie = database.get_categorie_id(article['nomCategorie'])
-    if not idCategorie: #la catégorie n'existe pas
-        article['idCategorie'] = database.set_categorie(article['nomCategorie'], article['idCategorieParente'])
-
-    #ajout d'une référence
-    try:
-        reference['idReference'] = database.add_reference(reference['auteur'], reference['titre'], reference['anneeParution'],
-                                             reference['isbn'], reference['editeur'])
-    except Exception as e:
-        print(f"l'Ajout de la référence à la base de donnée a échoué: {e}")
-
-    #ajout d'un article
-    try:
-        database.add_article(article['titre'], article['contenu'], article['idCategorie'], article['userID'], reference['idReference'])
-    except Exception as e:
-        print(f"l'Ajout de l'article' à la base de donnée a échoué: {e}")
-
+    # print(contenuArticle)
+    # print(references)
 
     return redirect(url_for('index'))
 
@@ -200,6 +177,7 @@ def addComment():
 
 @app.route("/up")
 def up():
+
     try:
         database.up()
         flash("Création de la base de données réussi!")
@@ -216,14 +194,15 @@ def autocomplete():
 
 @app.route('/update_profile', methods=['POST'])
 def update_name():
+    userName = None
     try:
         nameForm = request.form
-        user = nameForm["username"]
-        database.update_profile(user, session["userId"])
+        userName = nameForm["username"]
+        database.update_profile(userName, session["userId"])
     except Exception as e:
         flash(str(e))
-    session["userName"] = user
-    return redirect(url_for("user"))
+    session["userName"] = userName
+    return redirect(url_for("checkRole"))
 
 
 @app.route('/update_password', methods=['POST'])
@@ -231,7 +210,7 @@ def update_password():
     mdpForm = request.form
     password = mdpForm["password"]
     database.update_password(password, session["userId"])
-    return redirect(url_for("user"))
+    return redirect(url_for("checkRole"))
 
 
 @app.route('/delete_account', methods=['GET', 'POST'])

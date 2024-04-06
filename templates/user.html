@@ -4,16 +4,16 @@
     <!-- Gestion autonome des informations des utilisateurs -->
 
 <div class="content">
-    <br><h1>Gestion de votre compte {{ session['userName']}}</h1>
-    <p> Votre email pour ce compte: {{ session['userEmail']}}</p><br><br><br><br>
-     <h2>Modifiez vos données de connexion</h2><br><br>
+    <h1>Gestion de votre compte {{ session['userName']}}</h1>
+    <p> Votre email pour ce compte: {{ session['userEmail']}}</p><br>
+     <h2>Modifiez vos données de connexion</h2>
 
     <!-- Modifier le nom d'utilisateur -->
     <form name="profileForm" action="/update_profile" method="POST">
     <label for="username">Nom d'utilisateur: {{ session['userName']}}</label><br>
     <input type="text" id="username" name="username" placeholder="Nouveau nom d'utilisateur" oninput="clearPlaceholder(this)"><br>
 
-    <button type="submit">Sauvegarder le nom d'utilisateur</button><br><br><br>
+    <button type="submit">Sauvegarder le nom d'utilisateur</button><br>
     </form>
 
     <!-- Modifier le mot de passe -->
@@ -21,23 +21,12 @@
     <label for="password">Mot de passe:</label><br>
     <input type="password" id="password" name="password" placeholder="Nouveau mot de passe"><br>
 
-    <button type="submit">Sauvegarder le mot de passe</button><br><br><br><br><br><br><br>
+    <button type="submit">Sauvegarder le mot de passe</button><br>
     </form>
 
 
     <!-- Supprimer un compte -->
-    <br><br><br><h2>Supprimer votre compte</h2><br>
-
-    <script>
-        function confirmDelete() {
-            var confirmed = confirm("Êtes-vous certain de vouloir supprimer votre compte?");
-            if (confirmed) {
-                document.getElementById("deleteForm").submit();
-            } else {
-                return false;
-            }
-        }
-    </script>
+    <h2>Supprimer votre compte</h2><br>
 
     <form id="deleteForm" action="/delete_account" method="POST">
         <label for="confirmation">Pour supprimer votre compte, appuyez ci-dessous:</label><br><br>

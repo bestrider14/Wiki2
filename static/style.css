@@ -18,6 +18,10 @@
     color: #ff3d00;
 }
 
+.spacer{
+    padding-top: 100px;
+}
+
 textarea {
   resize: none;
 }
@@ -148,6 +152,10 @@ input:valid {
     text-align: center;
     color: white;
     background: #080008;
+}
+
+.content h2{
+    margin-top: 20px;
 }
 
 .article{
@@ -323,3 +331,7 @@ input:valid {
     margin-bottom: 10px;
 }
 
+.profile{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
