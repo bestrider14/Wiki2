@@ -155,9 +155,9 @@ def creeArticle():
 
 @app.route("/creeArticle", methods=['POST'])
 def soumettreArticle():
-    #Récupérer l'ID de l'utilisateur
-    if 'userID' in session:
-        userID = session['userID']
+    # Récupérer l'ID de l'utilisateur
+    if 'userId' in session:
+        userID = session['userId']
     else:
         return redirect(url_for('login'))
 
@@ -172,13 +172,12 @@ def soumettreArticle():
     article = {
         'titre': request.form["titreArticle"],
         'contenu': request.form["contenuArticle"],
-        # Il faut avoir l'idCategorie, pas juste la catégorie... faire une requête database
         'nomCategorie': request.form["categorie"],
         'nomCategorieParente': request.form["categorieParente"],
         'userID': userID,
     }
 
-    #trouver l'id de la categorie parente
+    # trouver l'id de la categorie parente
     try:
         idCategorieParent = database.get_categorie_id(article['nomCategorieParente'])
         if not idCategorieParent:
@@ -186,26 +185,33 @@ def soumettreArticle():
         article['idCategorieParente'] = idCategorieParent
     except Exception as e:
         print(f"La catégorie parente n'existe pas {e}")
+        return redirect(url_for('creeArticle'))
 
-    #Récupérer l'id de la catégorie de l'article
+    # Récupérer l'id de la catégorie de l'article
     idCategorie = database.get_categorie_id(article['nomCategorie'])
-    if not idCategorie: #la catégorie n'existe pas
+    if not idCategorie:  # la catégorie n'existe pas
         article['idCategorie'] = database.set_categorie(article['nomCategorie'], article['idCategorieParente'])
+    article['idCategorie'] = idCategorie
 
-    #ajout d'une référence
+    # ajout d'une référence
     try:
-        reference['idReference'] = database.add_reference(reference['auteur'], reference['titre'], reference['anneeParution'],
-                                             reference['isbn'], reference['editeur'])
+        result = database.add_reference(reference['auteur'], reference['titre'], reference['anneeParution'],
+                                        reference['isbn'], reference['editeur'])
+        if result:
+            reference['idReference'] = result
+        else:
+            reference['idReference'] = None
     except Exception as e:
         print(f"l'Ajout de la référence à la base de donnée a échoué: {e}")
 
-    #ajout d'un article
+    # ajout d'un article
     try:
-        database.add_article(article['titre'], article['contenu'], article['idCategorie'], article['userID'], reference['idReference'])
+        database.add_article(article['titre'], article['contenu'], article['idCategorie'], article['userID'],
+                             reference['idReference'])
     except Exception as e:
         print(f"l'Ajout de l'article' à la base de donnée a échoué: {e}")
 
-
+    flash('Your action was successful!', 'success')
     return redirect(url_for('index'))
 
 

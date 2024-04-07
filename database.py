@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 import pymysql
 import os
 from dotenv import load_dotenv
@@ -71,6 +71,26 @@ class Database:
         self.cursor.execute(statement)
         result = self.cursor.fetchall()
         return result
+
+    def get_categorie_id(self, nom):
+        self.cursor.execute("SELECT idCategorie FROM categories WHERE nom = %s;", nom)
+        result = self.cursor.fetchone()
+        if result:
+            return result[0]
+        else:
+            return None
+
+    def set_categorie(self, nom, idCategorieParent):
+        try:
+            assert idCategorieParent is not None
+            assert nom is not None
+            assert self.get_categorie_id(nom) is None
+            self.cursor.execute("INSERT INTO categories (nom, idCategorieParent) VALUE (%s, %s)",
+                                (nom, idCategorieParent))
+        except AssertionError as e:
+            print(f"Erreur d'insertion d'une nouvelle catégorie {e}")
+        finally:
+            return self.cursor.lastrowid
 
     def random_id(self):
         statement = f"SELECT articles.idArticle FROM articles ORDER BY RAND() LIMIT 1;"
@@ -177,6 +197,30 @@ class Database:
             print(e)
             return False
 
+    def add_reference(self, nomAuteur, titreDocument, anneeParution, ISBN, editeur):
+        statement = ("INSERT INTO `refs` (`nomAuteur`, `titreDocument`, `anneeParution`, `ISBN`, `editeur`) VALUES ("
+                     "%s, %s, %s, %s, %s);")
+        data = (nomAuteur, titreDocument, anneeParution, ISBN, editeur)
+        try:
+            self.cursor.execute(statement, data)
+            self.connection.commit()
+            return self.cursor.lastrowid
+        except Exception as e:
+            print(e)
+            return None
+
+    def add_article(self, titre, contenu, idCategorie, idCreateur, idreference):
+        statement = ("INSERT INTO `articles` (`titre`, `contenu`, `dateCreation`, "
+                     "`idCategorie`, `idCreateur`, `idRef`) VALUES (%s, %s, %s, %s, %s, %s);")
+        data = (titre, contenu, date.today().isoformat(), idCategorie, idCreateur, idreference)
+        try:
+            self.cursor.execute(statement, data)
+            return self.cursor.lastrowid
+        except Exception as e:
+            print(e)
+            return None
+
+
     # Get les emails des utilisateur pouvant exclure les admins
     def get_email(self, role='administrateur'):
         statement = f"SELECT utilisateurs.email FROM utilisateurs "
@@ -230,7 +274,3 @@ class Database:
         except pymysql.MySQLError as e:
             print(e)
             return False
-
-    #   def ajouter_article(self, titre, categorie, categorie_parente, contenu, references):
-
-    #   statement = "INSERT INTO articles (`titre`, contenu, `dateCreation`, `idCategorie`, `idCreateur`, `idRef`) VALUES (
