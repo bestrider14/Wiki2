@@ -18,10 +18,10 @@ def index():
     if autologin:
         print("auto login")
         session["userId"] = 204
-        session["userName"] = "Test"
-        session["userEmail"] = "Test1@mail.com"
+        session["userName"] = "Johny"
+        session["userEmail"] = "jb@gmail.com"
         session["userGenre"] = "Masculin"
-        session["userRole"] = "administrateur"
+        session["userRole"] = 1
     return render_template("index.html")
 
 
@@ -158,31 +158,56 @@ def creeArticle():
 
 @app.route("/creeArticle", methods=['POST'])
 def soumettreArticle():
+    #Récupérer l'ID de l'utilisateur
     if 'userID' in session:
         userID = session['userID']
     else:
         return redirect(url_for('login'))
 
-    contenuArticle = {
-        'titre': request.form["titreArticle"],
-        'contenu': request.form["contenuArticle"],
-        'dateCreation': date.today().isoformat(),
-        # Il faut avoir l'idCategorie, pas juste la catégorie... faire une requête database
-        'categorie': request.form["categorie"],
-        'categorieParente': request.form["categorieParente"],
-        'idCreateur': userID,
-    }
-
-    references = {
-        'titre': request.form["titreReference"],
+    reference = {
         'auteur': request.form["auteur"],
-        'annee': request.form["anneeParution"],
+        'titre': request.form["titreReference"],
+        'anneeParution': request.form["anneeParution"],
         'isbn': request.form["isbn"],
         'editeur': request.form["editeur"]
     }
 
-    # print(contenuArticle)
-    # print(references)
+    article = {
+        'titre': request.form["titreArticle"],
+        'contenu': request.form["contenuArticle"],
+        # Il faut avoir l'idCategorie, pas juste la catégorie... faire une requête database
+        'nomCategorie': request.form["categorie"],
+        'nomCategorieParente': request.form["categorieParente"],
+        'userID': userID,
+    }
+
+    #trouver l'id de la categorie parente
+    try:
+        idCategorieParent = database.get_categorie_id(article['nomCategorieParente'])
+        if not idCategorieParent:
+            throw = Exception("CategorieParente n'existe pas de categorie")
+        article['idCategorieParente'] = idCategorieParent
+    except Exception as e:
+        print(f"La catégorie parente n'existe pas {e}")
+
+    #Récupérer l'id de la catégorie de l'article
+    idCategorie = database.get_categorie_id(article['nomCategorie'])
+    if not idCategorie: #la catégorie n'existe pas
+        article['idCategorie'] = database.set_categorie(article['nomCategorie'], article['idCategorieParente'])
+
+    #ajout d'une référence
+    try:
+        reference['idReference'] = database.add_reference(reference['auteur'], reference['titre'], reference['anneeParution'],
+                                             reference['isbn'], reference['editeur'])
+    except Exception as e:
+        print(f"l'Ajout de la référence à la base de donnée a échoué: {e}")
+
+    #ajout d'un article
+    try:
+        database.add_article(article['titre'], article['contenu'], article['idCategorie'], article['userID'], reference['idReference'])
+    except Exception as e:
+        print(f"l'Ajout de l'article' à la base de donnée a échoué: {e}")
+
 
     return redirect(url_for('index'))
 
