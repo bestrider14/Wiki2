@@ -11,7 +11,7 @@
                 </ul>
             {% endif %}
         {% endwith %}
-    <form name="inscription_form" action="/register" method="post">
+    <form name="inscription_form" action="{{ url_for('register') }}" method="post">
         <input class="inputForm" name="nomUtilisateur" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Entrez un nom d'utilisateur" maxlength="50" required><br>
         <input class="inputForm" name="email" type="email" placeholder="&#x270e;   Entrez votre email" maxlength="250" onchange="checkIfUserExists()" required><br>
         <input class="inputForm" name="motDePasse" type="password" placeholder="&#x270e;   Entrez votre mot de passe" required><br>

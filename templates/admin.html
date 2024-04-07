@@ -4,44 +4,20 @@
 <div class="content">
     <h1>Gestion de votre compte administrateur {{ session['userName']}}</h1>
 
-    {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="flashed">
-                    {% for message in messages %}
-                        <li class="orange">{{message}}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
+    {% include "include/flash_msg.html" %}
 
-    {% include "include/gestion_all_compte.html" %}
-    {% include "include/mod_compte.html" %}
+    {% include "include/gestionDesUtilisateurs.html" %}
+    {% include "include/add_ref.html" %}
 
-
-
+    
     <div class="block_gestion">
         <h2>Gestion de la base de données</h2>
         <form name="upForm" action="/up" method="post">
             <button onclick="confirmUp()">Créer la base de données</button>
         </form>
     </div>
-
+    {% include "include/modifiezVosDonnees.html" %}
     {% include "include/del_account.html" %}
 
-    <!-- Script pour auto complete email apres 4 caractere -->
-    <script>
-        $(function() {
-            $.ajax({
-                url: '{{ url_for("autocomplete") }}'
-                }).done(function (data){
-                    $('#email_autocomplete').autocomplete({
-                        source: data,
-                        minLength: 4
-                    });
-                });
-            });
-    </script>
-    <!-- Script pour actualiser le champ du role apres lecriture du email -->
-    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
 </div>
 {% endblock %}

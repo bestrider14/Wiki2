@@ -184,7 +184,7 @@ def soumettreArticle():
     return redirect(url_for('index'))
 
 
-@app.route("/add_comment", methods=["POST"])
+@app.route("/addComment", methods=["POST"])
 def addComment():
     commentForm = request.form
     reussi = database.add_comment(commentForm["articleId"], commentForm["userId"], commentForm["comment"])

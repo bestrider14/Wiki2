@@ -2,7 +2,7 @@
     <div class="block_gestion">
         <h2>Supprimer votre compte</h2><br>
 
-        <form id="deleteForm" action="/delete_account" method="POST">
+        <form id="deleteForm" action="{{ url_for('delete_account') }}" method="POST">
             <label for="confirmation">Pour supprimer votre compte, appuyez ci-dessous:</label><br><br>
             <button type="button" onclick="confirmDelete()" id="confirmation">Supprimer votre compte</button>
             <br><p><small>Attention!<small> Les informations reliées à votre compte seront supprimé<br>
