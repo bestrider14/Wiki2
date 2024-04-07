@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime
 import pymysql
 import os
 from dotenv import load_dotenv
@@ -72,21 +72,6 @@ class Database:
         result = self.cursor.fetchall()
         return result
 
-    def get_categorie_id(self, nom):
-        self.cursor.execute("SELECT * FROM categories WHERE nom = %s;", nom)
-        return self.cursor.lastrowid
-
-    def set_categorie(self, nom, idCategorieParent):
-        try:
-            assert idCategorieParent is not None
-            assert nom is not None
-            assert self.get_categorie_id(nom) is None
-            self.cursor.execute("INSERT INTO categories (nom, idCategorieParent) VALUE (%s, %s)", (nom, idCategorieParent))
-        except AssertionError as e:
-            print(f"Erreur d'insertion d'une nouvelle catégorie {e}")
-        finally:
-            return self.cursor.lastrowid
-
     def random_id(self):
         statement = f"SELECT articles.idArticle FROM articles ORDER BY RAND() LIMIT 1;"
         self.cursor.execute(statement)
@@ -105,26 +90,36 @@ class Database:
         self.cursor.execute(statement, data)
         return self.cursor.fetchone()[0]
 
+    # ajoute un nouveau membre
     def inscription(self, nom, mdp, email, genre):
         # Préparer la requête SQL
         requete = "INSERT INTO utilisateurs (nom, motDePasse, email, genre, role) VALUES (%s, MD5(%s), %s, %s, %s)"
-        data = (nom, mdp, email, genre, 0)
+        data = (nom, mdp, email, genre, 'utilisateur')
 
         # Envoyer la requete
         try:
             self.cursor.execute(requete, data)
-            return "Inscription réussie"
+            return True
 
         except pymysql.MySQLError as e:
             print(e)
-            return "Erreur à l inscription"
+            return False
 
+    # Retourne les infos de l'utilisateur avec son email
     def getUserInfo(self, email):
         statement = f"SELECT utilisateurs.idUtilisateur, utilisateurs.nom, utilisateurs.email, utilisateurs.genre, utilisateurs.role FROM utilisateurs WHERE utilisateurs.email = %s;"
         data = email
         self.cursor.execute(statement, data)
         return self.cursor.fetchone()
 
+    # Retourne le role de l'utilisateur avec son email
+    def getRole(self, email):
+        statement = f"SELECT utilisateurs.role FROM utilisateurs WHERE utilisateurs.email = %s;"
+        data = email
+        self.cursor.execute(statement, data)
+        return self.cursor.fetchone()
+
+    # Get les infos sur un commentaire et transforme son timestamp en interval (Il y a X temps)
     def get_info_commentaires(self, idarticle):
         statement = (f"SELECT messages.contenu, messages.horodatage, utilisateurs.nom "
                      f"FROM messages INNER JOIN utilisateurs ON messages.idUtilisateur = utilisateurs.idUtilisateur "
@@ -169,6 +164,7 @@ class Database:
                     x[1] = f"{time:.0f} secondes"
         return liste
 
+    # Ajoute un commentaire a un article via son Id
     def add_comment(self, articleid, userid, comment):
         statement = f"INSERT INTO messages (contenu, horodatage, idArticle, idUtilisateur) VALUES (%s, NOW(), %s, %s);"
         data = comment, articleid, userid
@@ -181,21 +177,12 @@ class Database:
             print(e)
             return False
 
-    def add_reference(self, nomAuteur, titreDocument, anneeParution, ISBN, editeur):
-        statement = "INSERT INTO `refs` (`nomAuteur`, `titreDocument`, `anneeParution`, `ISBN`, `editeur`) VALUES (%s, %s, %s, %s, %s);"
-        data = (nomAuteur, titreDocument, anneeParution, ISBN, editeur)
-        self.cursor.execute(statement, data)
-        return self.cursor.lastrowid
-
-    def add_article(self, titre, contenu, idCategorie, idCreateur, idreference):
-        statement = ("INSERT INTO `articles` (`titre`, `contenu`, `dateCreation`, "
-                     "`idCategorie`, `idCreateur`, `idRef`) VALUES (%s, %s, %s, %s, %s, %s);")
-        data = (titre, contenu, date.today().isoformat(), idCategorie, idCreateur, idreference)
-        self.cursor.execute(statement, data)
-        return "Ajout de l'article réussi"
-
-    def get_all_email(self):
-        statement = f"SELECT utilisateurs.email FROM utilisateurs;"
+    # Get les emails des utilisateur pouvant exclure les admins
+    def get_email(self, role='administrateur'):
+        statement = f"SELECT utilisateurs.email FROM utilisateurs "
+        if role != 'administrateur':
+            statement += f"WHERE utilisateurs.role != 'administrateur'"
+        statement += f";"
         self.cursor.execute(statement)
         liste = []
         for email in self.cursor.fetchall():
@@ -205,18 +192,45 @@ class Database:
     def update_profile(self, nom, id):
         statement = f"UPDATE utilisateurs SET nom = %s WHERE idUtilisateur = %s;"
         data = nom, id
-        self.cursor.execute(statement, data)
-        return "Modification du nom d'utilisateur réussi"
 
-    def update_password(self, motDePasse, id):
+        try:
+            self.cursor.execute(statement, data)
+            return True
+        except pymysql.MySQLError as e:
+            print(e)
+            return False
+
+    def update_password(self, motdepasse, id):
         statement = "UPDATE utilisateurs SET motDePasse = md5(%s) WHERE idUtilisateur = %s;"
-        data = motDePasse, id
-        self.cursor.execute(statement, data)
-        return "Modification du mot de passe réussi"
+        data = motdepasse, id
+        try:
+            self.cursor.execute(statement, data)
+            return True
+        except pymysql.MySQLError as e:
+            print(e)
+            return False
 
-    def delete_account(self, id):
-        statement = "DELETE FROM utilisateurs WHERE idUtilisateur = %s;"
-        data = id
-        self.cursor.execute(statement, data)
-        return "Suppression du compte réussi"
+    def update_role(self, role, email):
+        statement = f"UPDATE utilisateurs SET utilisateurs.role = %s WHERE utilisateurs.email = %s;"
+        data = role, email
 
+        try:
+            self.cursor.execute(statement, data)
+            return True
+        except pymysql.MySQLError as e:
+            print(e)
+            return False
+
+    def delete_account(self, email):
+        statement = "DELETE FROM utilisateurs WHERE utilisateurs.email = %s;"
+        data = email
+        try:
+            self.cursor.execute(statement, data)
+            return True
+        except pymysql.MySQLError as e:
+            print(e)
+            return False
+
+    #   def ajouter_article(self, titre, categorie, categorie_parente, contenu, references):
+
+    #   statement = "INSERT INTO articles (`titre`, contenu, `dateCreation`, `idCategorie`, `idCreateur`, `idRef`) VALUES (

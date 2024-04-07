@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html lang="fr">
     <head>
+        <style>
+        footer {
+            background-color: #151515;
+            color: #fff;
+            text-align: center;
+            padding: 12px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        }
+        footer a {
+            color: #0000FF; /* Couleur du lien */
+            text-decoration: underline;
+        }
+    </style>
     {% include "include/head.html" %}
     </head>
     <body>
@@ -14,8 +30,8 @@
                     <li><a href="{{ url_for('articles') }}" onclick="location.href=this.href+'?letter=A';return false;">Liste Articles</a></li>
                     <li><a href="{{ url_for('article') }}?id=Random">Article Aléatoire</a></li>
                     {% if session['userId'] %}
-                        <li><a href="{{ url_for('checkRole') }}">Gestion compte</a></li>
                         <li><a href="{{ 'creeArticle' }}">Créer un article</a></li>
+                        <li><a href="{{ url_for('checkRole') }}">Gestion compte</a></li>
                         <a href="{{ url_for('logout') }}"><li class="btn">Déconnexion</li></a>
 
                     {% else %}
@@ -28,6 +44,15 @@
 
         {% block body %}
         <div class="content_center">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashed">
+                    {% for message in messages %}
+                        <li>{{message}}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
             <h1>Bienvenue sur Wiki²</h1>
             <form name="search_form" action="/search" method="post">
                     <input type="text" placeholder="&#x270e;   Entrez un mot clé" name="keyword">
@@ -35,7 +60,10 @@
             </form>
         </div>
         {% endblock %}
-
+    <footer>
+        <p>&copy; 2024 Wiki2. Tous droits réservés.</p>
+        <p><a href="privacy.html">Politique de confidentialité</a></p>
+    </footer>
     </body>
     <script src="{{ url_for('static', filename='app.js')}}"></script>
 </html>

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, Response, request, jsonify, session, redirect, url_for, flash, json
 from database import Database
-from wtforms import StringField, Form
+from datetime import date
 import os
 
 app = Flask(__name__, instance_relative_config=True)
@@ -9,7 +9,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 database = Database()
 
 # FOR DEBUG ONLY
-autologin = True
+autologin = False
 
 
 @app.route("/")
@@ -57,10 +57,28 @@ def validate_login():
 def register():
     if request.method == "POST":
         data = request.form
-        database.inscription(data["nomUtilisateur"], data["motDePasse"], data["email"], data["genre"])
-        return render_template("index.html")
+        status = database.inscription(data["nomUtilisateur"], data["motDePasse"], data["email"], data["genre"])
+        if status:  # si pas erreur
+            flash("Inscription réussi")
+            userInfo = database.getUserInfo(data["email"])
+            session["userId"] = userInfo[0]
+            session["userName"] = userInfo[1].capitalize()
+            session["userEmail"] = userInfo[2]
+            session["userGenre"] = userInfo[3]
+            session["userRole"] = userInfo[4]
+            return redirect(url_for('index'))
+        else:
+            flash("Une erreur est survenue lors de l'inscription")
+            return redirect(url_for('register'))
     else:
         return render_template("inscription.html")
+
+
+@app.route("/get_user_role", methods=["POST"])
+def get_user_role():
+    email = request.get_json()["email"]
+    role = database.getRole(email)
+    return jsonify({"user_role": role})
 
 
 @app.route("/validate_user_registration", methods=["POST"])
@@ -119,12 +137,14 @@ def search():
 
 @app.route("/checkRole")
 def checkRole():
-    if session['userRole'] == 0:
-        return redirect(url_for("user"))
-    if session['userRole'] == 1:
-        return redirect(url_for("moderateur"))
-    if session['userRole'] == 2:
-        return redirect(url_for("admin"))
+    if "userRole" in session:
+        if session['userRole'] == 'utilisateur':
+            return redirect(url_for("user"))
+        if session['userRole'] == 'moderateur':
+            return redirect(url_for("moderateur"))
+        if session['userRole'] == 'administrateur':
+            return redirect(url_for("admin"))
+    return redirect(url_for("login"))
 
 
 @app.route("/creeArticle", methods=['GET'])
@@ -188,7 +208,8 @@ def soumettreArticle():
 
     return redirect(url_for('index'))
 
-@app.route("/add_comment", methods=["POST"])
+
+@app.route("/addComment", methods=["POST"])
 def addComment():
     commentForm = request.form
     reussi = database.add_comment(commentForm["articleId"], commentForm["userId"], commentForm["comment"])
@@ -197,8 +218,16 @@ def addComment():
     return redirect(url_for("article") + "?id=" + commentForm["articleId"])
 
 
-@app.route("/up")
+@app.route("/up", methods=["POST"])
 def up():
+    if 'userRole' not in session:
+        flash("Vous devez être connecté pour faire cette action")
+        return redirect(url_for("login"))
+
+    if session['userRole'] != 'administrateur':
+        flash("Vous devez être administrateur pour faire cette action")
+        return redirect(url_for("admin"))
+
     try:
         database.up()
         flash("Création de la base de données réussi!")
@@ -209,20 +238,51 @@ def up():
 
 @app.route('/_autocomplete', methods=['GET'])
 def autocomplete():
-    email = database.get_all_email()
+    if 'userRole' not in session:
+        flash("Vous devez être connecté pour faire cette action")
+        return redirect(url_for("login"))
+
+    email = database.get_email(session['userRole'])
     return Response(json.dumps(email), mimetype='application/json')
 
 
+@app.route('/update_user_admin', methods=['POST'])
+def update_user_admin():
+    delete = request.form.get("delete_user") is not None
+    data = request.form
+    email = data["email"]
+    role = data["role"]
+    existe = database.check_if_user_exists(email)
+    if not existe:
+        flash("Le email n'existe pas")
+    if len(email) > 0 and existe:
+        if delete:
+            status = database.delete_account(email)
+            if status:
+                flash("Compte suprimer")
+            else:
+                flash("Erreur lors de la suppression")
+            return redirect(url_for("checkRole"))
+        if database.getRole(email) != role:
+            status = database.update_role(role, email)
+            if status:
+                flash("Le role a bien été mis à jour")
+            else:
+                flash("Erreur: Le role n'a pas été mis a jour")
+            return redirect(url_for("checkRole"))
+
+
 @app.route('/update_profile', methods=['POST'])
-def update_name():
+def update_profile():
+    userName = None
     try:
         nameForm = request.form
-        user = nameForm["username"]
-        database.update_profile(user, session["userId"])
+        userName = nameForm["username"]
+        database.update_profile(userName, session["userId"])
     except Exception as e:
         flash(str(e))
-    session["userName"] = user
-    return redirect(url_for("user"))
+    session["userName"] = userName
+    return redirect(url_for("checkRole"))
 
 
 @app.route('/update_password', methods=['POST'])
@@ -230,22 +290,23 @@ def update_password():
     mdpForm = request.form
     password = mdpForm["password"]
     database.update_password(password, session["userId"])
-    return redirect(url_for("user"))
+    return redirect(url_for("checkRole"))
 
 
 @app.route('/delete_account', methods=['GET', 'POST'])
 def delete_account():
-    if "userId" not in session:
+    if "userEmail" not in session:
         return redirect(url_for("login"))
-    user_delete = session["userId"]
-    database.delete_account(user_delete)
-    session.clear()
+    user_delete = session["userEmail"]
+    status = database.delete_account(user_delete)
+
+    if status:
+        flash("Compte supprimer")
+        session.clear()
+    else:
+        flash("Une erreur est survenue")
+
     return redirect(url_for("logout"))
-
-
-@app.route('/deleted_account')
-def deleted_account():
-    return "Votre compte a bien été supprimé."
 
 
 if __name__ == '__main__':

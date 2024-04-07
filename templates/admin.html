@@ -1,53 +1,23 @@
 {% extends 'index.html' %}
 {% block body %}
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 <div class="content">
     <h1>Gestion de votre compte administrateur {{ session['userName']}}</h1>
 
-    <div class="block_gestion">
-        <h2>Gestion des utilisateurs</h2>
-        <form name="email_form" action="/register" method="post">
-            <input class="inputForm" name="email" type="email" id="email_autocomplete" placeholder="Chercher un Email" maxlength="250" onfocusout="checkIfUserExists()" required>
-            <select id="selectGenre" name="genre" required>
-                <option value="masculin">Utilisateur</option>
-                <option value="feminin">Modératreur</option>
-                <option value="autre">Administrateur</option>
-            </select>
-            <input type="checkbox" name="delete_user" id="delete_user">
-            <label for="delete_user"> Supprimer</label>
-            <button type="submit">Changer</button>
-        </form>
-    </div>
+    {% include "include/flash_msg.html" %}
 
+    {% include "include/gestionDesUtilisateurs.html" %}
+    {% include "include/add_ref.html" %}
+
+    
     <div class="block_gestion">
         <h2>Gestion de la base de données</h2>
-        <form action="/up">
-            <button>Créer la base de données</button>
+        <form name="upForm" action="/up" method="post">
+            <button onclick="confirmUp()">Créer la base de données</button>
         </form>
-        <br>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="flashed">
-                    {% for message in messages %}
-                        <li class="orange">{{message}}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
     </div>
+    {% include "include/modifiezVosDonnees.html" %}
+    {% include "include/del_account.html" %}
 
-
-    <script>
-        $(function() {
-            $.ajax({
-                url: '{{ url_for("autocomplete") }}'
-                }).done(function (data){
-                    $('#email_autocomplete').autocomplete({
-                        source: data,
-                        minLength: 4
-                    });
-                });
-            });
-    </script>
 </div>
 {% endblock %}
