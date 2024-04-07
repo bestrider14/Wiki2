@@ -1,6 +1,6 @@
 {% extends 'index.html' %}
 {% block body %}
-    <div class="content">
+    <div class="content"><br>
         <h1>Connexion</h1>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -12,8 +12,8 @@
             {% endif %}
         {% endwith %}
         <form name="login_form" action="{{ url_for('validate_login') }}" method="post">
-            <input class = "inputForm" name="email" type="email" placeholder="&#x270e;   Entrez votre email" maxlength="250" required><br>
-            <input class = "inputForm" name="motDePasse" type="password" placeholder="&#x270e;   Entrez votre mot de passe" required><br>
+            <input class = "inputForm" name="email" type="email" placeholder="&#x270e;   Entrez votre email" maxlength="250" style="width: 200px;" required><br>
+            <input class = "inputForm" name="motDePasse" type="password" placeholder="&#x270e;   Entrez votre mot de passe" style="width: 200px;" required><br>
             <button type="submit">Connexion</button>
         </form>
     </div>

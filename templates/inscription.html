@@ -12,10 +12,10 @@
         {% endif %}
     {% endwith %}
     <form name="inscription_form" action="{{ url_for('register') }}" method="post">
-        <input class="inputForm" name="nomUtilisateur" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Entrez un nom d'utilisateur" maxlength="50" required><br>
-        <input class="inputForm" name="email" type="email" placeholder="&#x270e;   Entrez votre email" maxlength="250" onchange="checkIfUserExists()" required><br>
-        <input class="inputForm" name="motDePasse" id="password" type="password" placeholder="&#x270e;   Entrez votre mot de passe" required><br>
-        <input class="inputForm" name="verifMotDePasse" id="confirm_password" type="password" placeholder="&#x270e;   Entrez à nouveau votre mot de passe" required><br>
+        <input class="inputForm" name="nomUtilisateur" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Entrez un nom d'utilisateur" maxlength="50" style="width: 260px;" required><br>
+        <input class="inputForm" name="email" type="email" placeholder="&#x270e;   Entrez votre email" maxlength="250" onchange="checkIfUserExists()" style="width: 260px;" required><br>
+        <input class="inputForm" name="motDePasse" id="password" type="password" placeholder="&#x270e;   Entrez votre mot de passe" style="width: 260px;" required><br>
+        <input class="inputForm" name="verifMotDePasse" id="confirm_password" type="password" placeholder="&#x270e;   Entrez à nouveau votre mot de passe" style="width: 260px;" required><br>
         <select id="selectGenre" name="genre" required>
             <option value="masculin">Masculin</option>
             <option value="feminin">Féminin</option>

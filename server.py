@@ -21,7 +21,7 @@ def index():
         session["userName"] = "Test"
         session["userEmail"] = "Test1@mail.com"
         session["userGenre"] = "Masculin"
-        session["userRole"] = "utilisateur"
+        session["userRole"] = "administrateur"
     return render_template("index.html")
 
 
