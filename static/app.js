@@ -2,7 +2,6 @@
 //variable globale pour compt
 
 const checkIfUserExists = () => {
-    data.user_exists = undefined;
     const registrationForm = document.forms['inscription_form']
     const emailFormElement = registrationForm['email']
     const email = emailFormElement.value
@@ -11,12 +10,10 @@ const checkIfUserExists = () => {
         email: email
     }).then((response) => {
         if(response.data.user_exists === "True") {
-            console.log(response.data)
             emailFormElement.setCustomValidity("Ce email est déjà utilsé. Veuillez vous connecter.")
             emailFormElement.reportValidity()
         }
         else{
-            console.log(response.data)
             emailFormElement.setCustomValidity("")
             emailFormElement.reportValidity()
         }
@@ -29,7 +26,6 @@ const checkIfUserExists = () => {
 
 
 const checkUserRole = () => {
-    data.user_role = undefined;
     const updateForm = document.forms['update_user']
     const emailFormElement = updateForm['email']
     const email = emailFormElement.value

@@ -1,0 +1,30 @@
+<div class="block_gestion">
+        <h2>Gestion des utilisateurs</h2>
+        <form name="update_user" action="/update_user_admin" method="post">
+            <input class="inputForm" name="email" type="email" id="email_autocomplete" placeholder="Chercher un Email" maxlength="250" onchange="checkUserRole()" >
+            <select id="selectRole" name="role" required>
+                <option value="utilisateur">Utilisateur</option>
+                <option value="moderateur">Modératreur</option>
+                <option value="administrateur">Administrateur</option>
+            </select>
+            <input type="checkbox" name="delete_user" id="delete_user">
+            <label for="delete_user"> Supprimer</label>
+            <button type="submit">Changer</button>
+        </form>
+    </div>
+
+<!-- Script pour auto complete email apres 4 caractere -->
+    <script>
+        $(function() {
+            $.ajax({
+                url: '{{ url_for("autocomplete") }}'
+                }).done(function (data){
+                    $('#email_autocomplete').autocomplete({
+                        source: data,
+                        minLength: 4
+                    });
+                });
+            });
+    </script>
+    <!-- Script pour actualiser le champ du role apres lecriture du email -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>

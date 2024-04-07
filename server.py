@@ -9,7 +9,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 database = Database()
 
 # FOR DEBUG ONLY
-autologin = True
+autologin = False
 
 
 @app.route("/")
@@ -57,10 +57,28 @@ def validate_login():
 def register():
     if request.method == "POST":
         data = request.form
-        database.inscription(data["nomUtilisateur"], data["motDePasse"], data["email"], data["genre"])
-        return render_template("index.html")
+        status = database.inscription(data["nomUtilisateur"], data["motDePasse"], data["email"], data["genre"])
+        if status:  # si pas erreur
+            flash("Inscription réussi")
+            userInfo = database.getUserInfo(data["email"])
+            session["userId"] = userInfo[0]
+            session["userName"] = userInfo[1].capitalize()
+            session["userEmail"] = userInfo[2]
+            session["userGenre"] = userInfo[3]
+            session["userRole"] = userInfo[4]
+            return redirect(url_for('index'))
+        else:
+            flash("Une erreur est survenue lors de l'inscription")
+            return redirect(url_for('register'))
     else:
         return render_template("inscription.html")
+
+
+@app.route("/get_user_role", methods=["POST"])
+def get_user_role():
+    email = request.get_json()["email"]
+    role = database.getRole(email)
+    return jsonify({"user_role": role})
 
 
 @app.route("/validate_user_registration", methods=["POST"])

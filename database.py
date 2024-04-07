@@ -90,26 +90,36 @@ class Database:
         self.cursor.execute(statement, data)
         return self.cursor.fetchone()[0]
 
+    # ajoute un nouveau membre
     def inscription(self, nom, mdp, email, genre):
         # Préparer la requête SQL
         requete = "INSERT INTO utilisateurs (nom, motDePasse, email, genre, role) VALUES (%s, MD5(%s), %s, %s, %s)"
-        data = (nom, mdp, email, genre, 0)
+        data = (nom, mdp, email, genre, 'utilisateur')
 
         # Envoyer la requete
         try:
             self.cursor.execute(requete, data)
-            return "Inscription réussie"
+            return True
 
         except pymysql.MySQLError as e:
             print(e)
-            return "Erreur à l inscription"
+            return False
 
+    # Retourne les infos de l'utilisateur avec son email
     def getUserInfo(self, email):
         statement = f"SELECT utilisateurs.idUtilisateur, utilisateurs.nom, utilisateurs.email, utilisateurs.genre, utilisateurs.role FROM utilisateurs WHERE utilisateurs.email = %s;"
         data = email
         self.cursor.execute(statement, data)
         return self.cursor.fetchone()
 
+    # Retourne le role de l'utilisateur avec son email
+    def getRole(self, email):
+        statement = f"SELECT utilisateurs.role FROM utilisateurs WHERE utilisateurs.email = %s;"
+        data = email
+        self.cursor.execute(statement, data)
+        return self.cursor.fetchone()
+
+    # Get les infos sur un commentaire et transforme son timestamp en interval (Il y a X temps)
     def get_info_commentaires(self, idarticle):
         statement = (f"SELECT messages.contenu, messages.horodatage, utilisateurs.nom "
                      f"FROM messages INNER JOIN utilisateurs ON messages.idUtilisateur = utilisateurs.idUtilisateur "
@@ -154,6 +164,7 @@ class Database:
                     x[1] = f"{time:.0f} secondes"
         return liste
 
+    # Ajoute un commentaire a un article via son Id
     def add_comment(self, articleid, userid, comment):
         statement = f"INSERT INTO messages (contenu, horodatage, idArticle, idUtilisateur) VALUES (%s, NOW(), %s, %s);"
         data = comment, articleid, userid
@@ -181,20 +192,33 @@ class Database:
     def update_profile(self, nom, id):
         statement = f"UPDATE utilisateurs SET nom = %s WHERE idUtilisateur = %s;"
         data = nom, id
-        self.cursor.execute(statement, data)
-        return "Modification du nom d'utilisateur réussi"
+
+        try:
+            self.cursor.execute(statement, data)
+            return True
+        except pymysql.MySQLError as e:
+            print(e)
+            return False
 
     def update_password(self, motdepasse, id):
         statement = "UPDATE utilisateurs SET motDePasse = md5(%s) WHERE idUtilisateur = %s;"
         data = motdepasse, id
-        self.cursor.execute(statement, data)
-        return "Modification du mot de passe réussi"
+        try:
+            self.cursor.execute(statement, data)
+            return True
+        except pymysql.MySQLError as e:
+            print(e)
+            return False
 
     def delete_account(self, id):
         statement = "DELETE FROM utilisateurs WHERE idUtilisateur = %s;"
         data = id
-        self.cursor.execute(statement, data)
-        return "Suppression du compte réussi"
+        try:
+            self.cursor.execute(statement, data)
+            return True
+        except pymysql.MySQLError as e:
+            print(e)
+            return False
 
     #   def ajouter_article(self, titre, categorie, categorie_parente, contenu, references):
 

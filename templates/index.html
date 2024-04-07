@@ -28,6 +28,15 @@
 
         {% block body %}
         <div class="content_center">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashed">
+                    {% for message in messages %}
+                        <li>{{message}}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
             <h1>Bienvenue sur Wiki²</h1>
             <form name="search_form" action="/search" method="post">
                     <input type="text" placeholder="&#x270e;   Entrez un mot clé" name="keyword">
