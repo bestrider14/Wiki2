@@ -61,9 +61,9 @@
         </div>
         {% endblock %}
     <footer>
-        <p>&copy; 2024 Wiki2. Tous droits réservés.</p>
-        <p><a href="privacy.html">Politique de confidentialité</a></p>
-    </footer>
+    <p>&copy; 2024 Wiki2. Tous droits réservés.</p>
+    <p><a href="{{ url_for('privacy') }}">Politique de confidentialité</a></p>
+</footer>
     </body>
     <script src="{{ url_for('static', filename='app.js')}}"></script>
 </html>

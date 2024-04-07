@@ -107,6 +107,9 @@ def moderateur():
 def admin():
     return render_template("admin.html")
 
+@app.route('/privacy')
+def privacy():
+    return render_template('include/privacy.html')
 
 @app.route("/articles")
 def articles():
