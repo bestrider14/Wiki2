@@ -1,7 +1,7 @@
 <div class="block_gestion">
     <h2>Gestion des utilisateurs</h2>
     <form name="update_user" action="{{ url_for('update_user_admin') }}" method="post">
-        <input class="inputForm" name="email" type="email" id="email_autocomplete" placeholder="Chercher un Email" maxlength="250" onchange="checkUserRole()" >
+        <input class="inputForm" name="email" type="email" id="autocomplete_email" placeholder="Chercher un Email" maxlength="250" onfocusout="checkUserRole()" onkeydown="checkUserRole()">
         <select id="selectRole" name="role" required>
             <option value="utilisateur">Utilisateur</option>
             <option value="moderateur">Modératreur</option>
@@ -14,17 +14,19 @@
 </div>
 
 <!-- Script pour auto complete email apres 4 caractere -->
-<script>
-    $(function() {
-        $.ajax({
-            url: '{{ url_for("autocomplete") }}'
-            }).done(function (data){
-                $('#email_autocomplete').autocomplete({
-                    source: data,
-                    minLength: 4
-                });
+<script type="text/javascript">
+$(function() {
+    $("#autocomplete_email").autocomplete({
+        source:function(request, response) {
+            $.getJSON("{{url_for('autocomplete_email')}}",{
+                q: request.term, // in flask, "q" will be the argument to look for using request.args
+            }, function(data) {
+                response(data.matching_results); // matching_results from jsonify
             });
+        },
+        minLength: 2,
     });
+})
 </script>
 <!-- Script pour actualiser le champ du role apres lecriture du email -->
 <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>

@@ -67,10 +67,17 @@ class Database:
         return self.cursor.fetchone()
 
     def get_all_categories(self):
-        statement = f"SELECT nom FROM categories"
+        statement = f"SELECT nom FROM categories;"
         self.cursor.execute(statement)
-        result = self.cursor.fetchall()
-        return result
+        return self.cursor.fetchall()
+
+    def get_titres_refs(self):
+        statement = f"SELECT refs.titreDocument FROM refs;"
+        self.cursor.execute(statement)
+        liste = []
+        for email in self.cursor.fetchall():
+            liste.append(email[0])
+        return liste
 
     def get_categorie_id(self, nom):
         self.cursor.execute("SELECT idCategorie FROM categories WHERE nom = %s;", nom)
@@ -222,12 +229,13 @@ class Database:
 
 
     # Get les emails des utilisateur pouvant exclure les admins
-    def get_email(self, role='administrateur'):
-        statement = f"SELECT utilisateurs.email FROM utilisateurs "
+    def getEmailLike(self, keyword, role):
+        statement = f"SELECT utilisateurs.email FROM utilisateurs WHERE utilisateurs.email LIKE %s "
         if role != 'administrateur':
-            statement += f"WHERE utilisateurs.role != 'administrateur'"
+            statement += f"AND utilisateurs.role != 'administrateur'"
         statement += f";"
-        self.cursor.execute(statement)
+        data = '%' + keyword + '%'
+        self.cursor.execute(statement, data)
         liste = []
         for email in self.cursor.fetchall():
             liste.append(email[0])
@@ -274,3 +282,17 @@ class Database:
         except pymysql.MySQLError as e:
             print(e)
             return False
+
+    #   def ajouter_article(self, titre, categorie, categorie_parente, contenu, references):
+
+    #   statement = "INSERT INTO articles (`titre`, contenu, `dateCreation`, `idCategorie`, `idCreateur`, `idRef`) VALUES (
+
+    def getCatLike(self, search):
+        statement = f"SELECT categories.nom FROM categories WHERE categories.nom LIKE %s;"
+        data = '%' + search + '%'
+        self.cursor.execute(statement, data)
+        liste = []
+        for cat in self.cursor.fetchall():
+            liste.append(cat[0])
+        return liste
+

@@ -24,6 +24,21 @@ const checkIfUserExists = () => {
 
 }
 
+const findCatParent = () => {
+    const CategoriesForm = document.forms['CategoriesForm']
+    const childCatFormElement = CategoriesForm['autocomplete_cat']
+    const childCat = childCatFormElement.value
+    if (childCat.length > 0){
+        axios.post('/findCatParent', {
+        childCat: childCat
+    }).then((response) => {
+        console.log(response.data.user_role)
+        document.getElementById("selectRole").value = response.data.user_role;
+    }, (error) => {
+        console.log(error)
+    })
+    }
+}
 
 const checkUserRole = () => {
     const updateForm = document.forms['update_user']
@@ -33,6 +48,7 @@ const checkUserRole = () => {
         axios.post('/get_user_role', {
         email: email
     }).then((response) => {
+        console.log(response.data.user_role)
         document.getElementById("selectRole").value = response.data.user_role;
     }, (error) => {
         console.log(error)

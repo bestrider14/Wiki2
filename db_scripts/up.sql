@@ -44,7 +44,7 @@ CREATE TABLE articles(
     FOREIGN KEY (idRef) REFERENCES refs(idReference) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
-CREATE INDEX titre_index ON articles (titre);
+CREATE FULLTEXT INDEX titre_index ON articles (titre);
 
 CREATE TABLE messages(
     idMessage INT AUTO_INCREMENT,

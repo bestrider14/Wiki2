@@ -1,0 +1,24 @@
+<div class="block_gestion">
+    <h2>Gestion des catégories</h2>
+    <form name="CategoriesForm" action="" method="post">
+        <input name="autocomplete_cat" type="text" id="autocomplete_cat" class="form-control input-lg" placeholder="Nom catégorie" onfocusout="findCatParent()" onkeydown="findCatParent()">
+        <select id="catParent" name="catParent" required>
+            <option value="utilisateur">Catégorie parent</option>
+        </select>
+    </form>
+</div>
+
+<script type="text/javascript">
+$(function() {
+    $("#autocomplete_cat").autocomplete({
+        source:function(request, response) {
+            $.getJSON("{{url_for('autocomplete_cat')}}",{
+                q: request.term,
+            }, function(data) {
+                response(data.matching_results);
+            });
+        },
+        minLength: 2,
+    });
+})
+</script>

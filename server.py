@@ -80,36 +80,24 @@ def get_user_role():
     role = database.getRole(email)
     return jsonify({"user_role": role})
 
+@app.route("/findCatParent", methods=["POST"])
+def findCatParent():
+    pass
 
 @app.route("/validate_user_registration", methods=["POST"])
 def validate_user_registration():
-    if request.method == "POST":
-        email = request.get_json()["email"]
-        userExist = database.check_if_user_exists(email)
-        if userExist:
-            return jsonify({"user_exists": "True"})
-        else:
-            return jsonify({"user_exists": "False"})
-    return
+    email = request.get_json()["email"]
+    userExist = database.check_if_user_exists(email)
+    if userExist:
+        return jsonify({"user_exists": "True"})
+    else:
+        return jsonify({"user_exists": "False"})
 
-
-@app.route("/user")
-def user():
-    return render_template("user.html")
-
-
-@app.route("/moderateur")
-def moderateur():
-    return render_template("moderateur.html")
-
-
-@app.route("/admin")
-def admin():
-    return render_template("admin.html")
 
 @app.route('/privacy')
 def privacy():
     return render_template('include/privacy.html')
+
 
 @app.route("/articles")
 def articles():
@@ -138,15 +126,15 @@ def search():
     return render_template("resultats.html", articles=liste_articles, keyword=searchForm["keyword"])
 
 
-@app.route("/checkRole")
-def checkRole():
+@app.route("/setting")
+def setting():
     if "userRole" in session:
         if session['userRole'] == 'utilisateur':
-            return redirect(url_for("user"))
+            return render_template("user.html")
         if session['userRole'] == 'moderateur':
-            return redirect(url_for("moderateur"))
+            return render_template("moderateur.html")
         if session['userRole'] == 'administrateur':
-            return redirect(url_for("admin"))
+            return render_template("admin.html")
     return redirect(url_for("login"))
 
 
@@ -235,24 +223,32 @@ def up():
 
     if session['userRole'] != 'administrateur':
         flash("Vous devez être administrateur pour faire cette action")
-        return redirect(url_for("admin"))
+        return redirect(url_for("setting"))
 
     try:
         database.up()
         flash("Création de la base de données réussi!")
     except Exception as e:
         flash(str(e))
-    return redirect(url_for("admin"))
+    return redirect(url_for("setting"))
 
 
-@app.route('/_autocomplete', methods=['GET'])
-def autocomplete():
+@app.route('/_autocomplete_email', methods=['GET'])
+def autocomplete_email():
     if 'userRole' not in session:
         flash("Vous devez être connecté pour faire cette action")
         return redirect(url_for("login"))
 
-    email = database.get_email(session['userRole'])
-    return Response(json.dumps(email), mimetype='application/json')
+    keyword = request.args.get('q')
+    results = database.getEmailLike(keyword, session['userRole'])
+    return jsonify(matching_results=results)
+
+
+@app.route('/autocomplete_cat', methods=['GET'])
+def autocomplete_cat():
+    keyword = request.args.get('q')
+    results = database.getCatLike(keyword)
+    return jsonify(matching_results=results)
 
 
 @app.route('/update_user_admin', methods=['POST'])
@@ -271,14 +267,14 @@ def update_user_admin():
                 flash("Compte suprimer")
             else:
                 flash("Erreur lors de la suppression")
-            return redirect(url_for("checkRole"))
+            return redirect(url_for("setting"))
         if database.getRole(email) != role:
             status = database.update_role(role, email)
             if status:
                 flash("Le role a bien été mis à jour")
             else:
                 flash("Erreur: Le role n'a pas été mis a jour")
-            return redirect(url_for("checkRole"))
+            return redirect(url_for("setting"))
 
 
 @app.route('/update_profile', methods=['POST'])
@@ -291,7 +287,7 @@ def update_profile():
     except Exception as e:
         flash(str(e))
     session["userName"] = userName
-    return redirect(url_for("checkRole"))
+    return redirect(url_for("setting"))
 
 
 @app.route('/update_password', methods=['POST'])
@@ -299,7 +295,7 @@ def update_password():
     mdpForm = request.form
     password = mdpForm["password"]
     database.update_password(password, session["userId"])
-    return redirect(url_for("checkRole"))
+    return redirect(url_for("setting"))
 
 
 @app.route('/delete_account', methods=['GET', 'POST'])
