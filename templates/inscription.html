@@ -1,20 +1,21 @@
 {% extends 'index.html' %}
 {% block body %}
-    <div class="content">
+<div class="content">
     <h1>Inscription</h1>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="flashed">
-                    {% for message in messages %}
-                        <li>{{message}}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashed">
+                {% for message in messages %}
+                    <li>{{message}}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     <form name="inscription_form" action="{{ url_for('register') }}" method="post">
         <input class="inputForm" name="nomUtilisateur" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Entrez un nom d'utilisateur" maxlength="50" required><br>
         <input class="inputForm" name="email" type="email" placeholder="&#x270e;   Entrez votre email" maxlength="250" onchange="checkIfUserExists()" required><br>
-        <input class="inputForm" name="motDePasse" type="password" placeholder="&#x270e;   Entrez votre mot de passe" required><br>
+        <input class="inputForm" name="motDePasse" id="password" type="password" placeholder="&#x270e;   Entrez votre mot de passe" required><br>
+        <input class="inputForm" name="verifMotDePasse" id="confirm_password" type="password" placeholder="&#x270e;   Entrez à nouveau votre mot de passe" required><br>
         <select id="selectGenre" name="genre" required>
             <option value="masculin">Masculin</option>
             <option value="feminin">Féminin</option>
@@ -24,4 +25,19 @@
     </form>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+<script>
+    var password = document.getElementById("password")
+    var confirm_password = document.getElementById("confirm_password");
+
+    function validatePassword() {
+        if (password.value != confirm_password.value) {
+            confirm_password.setCustomValidity("Les mots de passe ne correspondent pas");
+        } else {
+            confirm_password.setCustomValidity('');
+        }
+    }
+
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+</script>
 {% endblock %}
