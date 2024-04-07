@@ -21,7 +21,7 @@ def index():
         session["userName"] = "Johny"
         session["userEmail"] = "jb@gmail.com"
         session["userGenre"] = "Masculin"
-        session["userRole"] = "administrateur"
+        session["userRole"] = "moderateur"
     return render_template("index.html")
 
 
@@ -195,7 +195,11 @@ def up():
 
 @app.route('/_autocomplete', methods=['GET'])
 def autocomplete():
-    email = database.get_all_email()
+    if 'userRole' not in session:
+        flash("Vous devez être connecté pour faire cette action")
+        return redirect(url_for("login"))
+
+    email = database.get_email(session['userRole'])
     return Response(json.dumps(email), mimetype='application/json')
 
 

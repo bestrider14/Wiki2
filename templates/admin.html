@@ -4,6 +4,8 @@
 <div class="content">
     <h1>Gestion de votre compte administrateur {{ session['userName']}}</h1>
 
+    {% include "include/gestion_all_compte.html" %}
+
     <div class="block_gestion">
         <h2>Gestion des utilisateurs</h2>
         <form name="update_user" action="/update_user_admin" method="post">
@@ -35,6 +37,8 @@
             {% endif %}
         {% endwith %}
     </div>
+
+    {% include "include/del_account.html" %}
 
     <!-- Script pour auto complete email apres 4 caractere -->
     <script>

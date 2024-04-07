@@ -27,7 +27,9 @@ const checkIfUserExists = () => {
 
 }
 
+
 const checkUserRole = () => {
+    data.user_role = undefined;
     const updateForm = document.forms['update_user']
     const emailFormElement = updateForm['email']
     const email = emailFormElement.value
@@ -43,7 +45,7 @@ const checkUserRole = () => {
 }
 
 function confirmDelete() {
-    var confirmed = confirm("Êtes-vous certain de vouloir supprimer votre compte?");
+    const confirmed = confirm("Êtes-vous certain de vouloir supprimer votre compte?");
     if (confirmed) {
         document.getElementById("deleteForm").submit();
     } else {
@@ -52,7 +54,7 @@ function confirmDelete() {
 }
 
 function confirmUp() {
-    var confirmed = confirm("Êtes-vous certain refaire la basse de données");
+    const confirmed = confirm("Êtes-vous certain refaire la basse de données");
     if (confirmed) {
         document.getElementById("upForm").submit();
     } else {
@@ -64,11 +66,6 @@ function articleLink(id){
     window.location.href = "/article?id="+id;
 }
 
-function clearInput(element) {
-    if (element.value === "Example Text") {
-        element.value = "";
-    }
-}
 
 function changeUsername() {
     const newUsername = prompt("Enter your new username:");

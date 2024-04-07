@@ -166,8 +166,12 @@ class Database:
             print(e)
             return False
 
-    def get_all_email(self):
-        statement = f"SELECT utilisateurs.email FROM utilisateurs;"
+    # Get les emails des utilisateur pouvant exclure les admins
+    def get_email(self, role='administrateur'):
+        statement = f"SELECT utilisateurs.email FROM utilisateurs "
+        if role != 'administrateur':
+            statement += f"WHERE utilisateurs.role != 'administrateur'"
+        statement += f";"
         self.cursor.execute(statement)
         liste = []
         for email in self.cursor.fetchall():
@@ -180,9 +184,9 @@ class Database:
         self.cursor.execute(statement, data)
         return "Modification du nom d'utilisateur réussi"
 
-    def update_password(self, motDePasse, id):
+    def update_password(self, motdepasse, id):
         statement = "UPDATE utilisateurs SET motDePasse = md5(%s) WHERE idUtilisateur = %s;"
-        data = motDePasse, id
+        data = motdepasse, id
         self.cursor.execute(statement, data)
         return "Modification du mot de passe réussi"
 
@@ -192,6 +196,6 @@ class Database:
         self.cursor.execute(statement, data)
         return "Suppression du compte réussi"
 
-    #def ajouter_article(self, titre, categorie, categorie_parente, contenu, references):
+    #   def ajouter_article(self, titre, categorie, categorie_parente, contenu, references):
 
-        #statement = "INSERT INTO articles (`titre`, contenu, `dateCreation`, `idCategorie`, `idCreateur`, `idRef`) VALUES (
+    #   statement = "INSERT INTO articles (`titre`, contenu, `dateCreation`, `idCategorie`, `idCreateur`, `idRef`) VALUES (

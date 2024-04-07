@@ -1,39 +1,47 @@
 {% extends 'index.html' %}
 {% block body %}
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     <!-- Gestion autonome des informations des comptes modérateurs -->
 
 <div class="content">
     <h1>Gestion de votre compte modérateur {{ session['userName']}}</h1>
     <p> Votre email pour ce compte: {{ session['userEmail']}}</p>
-     <h2>Modifiez vos données de connexion</h2>
 
-    <!-- Modifier le nom d'utilisateur -->
-    <form name="profileForm" action="/update_profile" method="POST" class="profile">
-    <label for="username">Nom d'utilisateur: {{ session['userName']}}</label><br>
-    <input type="text" id="username" name="username" placeholder="Nouveau nom d'utilisateur" oninput="clearPlaceholder(this)"><br>
-    <button type="submit">Sauvegarder le nom d'utilisateur</button>
-    </form>
+    {% include "include/gestion_all_compte.html" %}
 
-    <!-- Modifier le mot de passe -->
-    <form name="mdpForm" action="/update_password" method="POST" class="profile">
-    <label for="password">Mot de passe:</label><br>
-    <input type="password" id="password" name="password" placeholder="Nouveau mot de passe"><br>
-
-    <button type="submit">Sauvegarder le mot de passe</button><br>
-    </form>
-
-
-    <!-- Supprimer un compte -->
-    <h2 class="spacer">Supprimer votre compte</h2>
-
-    <form id="deleteForm" action="/delete_account" method="POST">
-        <label>Pour supprimer votre compte, appuyez ci-dessous:</label><br><br>
-        <button type="button" onclick="confirmDelete()">Supprimer votre compte</button>
-        <br><p><small>Attention!<small> Les informations reliées à votre compte seront supprimé<br>
-        Ceci inclus: Vos articles, vos commentaires et vos informations personnelles</small></small></p>
-    </form>
+    <div class="block_gestion">
+        <h2>Gestion des utilisateurs</h2>
+        <form name="update_user" action="/update_user_admin" method="post">
+            <input class="inputForm" name="email" type="email" id="email_autocomplete" placeholder="Chercher un Email" maxlength="250" onchange="checkUserRole()" >
+            <select id="selectRole" name="role" required>
+                <option value="utilisateur">Utilisateur</option>
+                <option value="moderateur">Modératreur</option>
+                <option value="administrateur">Administrateur</option>
+            </select>
+            <input type="checkbox" name="delete_user" id="delete_user">
+            <label for="delete_user"> Supprimer</label>
+            <button type="submit">Changer</button>
+        </form>
+    </div>
 
 
+    {% include "include/del_account.html" %}
+
+    <!-- Script pour auto complete email apres 4 caractere -->
+    <script>
+        $(function() {
+            $.ajax({
+                url: '{{ url_for("autocomplete") }}'
+                }).done(function (data){
+                    $('#email_autocomplete').autocomplete({
+                        source: data,
+                        minLength: 4
+                    });
+                });
+            });
+    </script>
+    <!-- Script pour actualiser le champ du role apres lecriture du email -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
 </div>
 {% endblock %}

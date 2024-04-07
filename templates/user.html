@@ -6,34 +6,11 @@
 <div class="content">
     <h1>Gestion de votre compte {{ session['userName']}}</h1>
     <p> Votre email pour ce compte: {{ session['userEmail']}}</p><br>
-     <h2>Modifiez vos données de connexion</h2>
 
-    <!-- Modifier le nom d'utilisateur -->
-    <form name="profileForm" action="/update_profile" method="POST">
-    <label for="username">Nom d'utilisateur: {{ session['userName']}}</label><br>
-    <input type="text" id="username" name="username" placeholder="Nouveau nom d'utilisateur" oninput="clearPlaceholder(this)"><br>
-
-    <button type="submit">Sauvegarder le nom d'utilisateur</button><br>
-    </form>
-
-    <!-- Modifier le mot de passe -->
-    <form name="mdpForm" action="/update_password" method="POST">
-    <label for="password">Mot de passe:</label><br>
-    <input type="password" id="password" name="password" placeholder="Nouveau mot de passe"><br>
-
-    <button type="submit">Sauvegarder le mot de passe</button><br>
-    </form>
+    {% include "include/gestion_all_compte.html" %}
+    {% include "include/del_account.html" %}
 
 
-    <!-- Supprimer un compte -->
-    <h2>Supprimer votre compte</h2><br>
-
-    <form id="deleteForm" action="/delete_account" method="POST">
-        <label for="confirmation">Pour supprimer votre compte, appuyez ci-dessous:</label><br><br>
-        <button type="button" onclick="confirmDelete()">Supprimer votre compte</button>
-        <br><p><small>Attention!<small> Les informations reliées à votre compte seront supprimé<br>
-        Ceci inclus: Vos articles, vos commentaires et vos informations personnelles</small></small></p>
-    </form>
 
 
 </div>
