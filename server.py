@@ -221,6 +221,32 @@ def autocomplete():
     return Response(json.dumps(email), mimetype='application/json')
 
 
+@app.route('/update_user_admin', methods=['POST'])
+def update_user_admin():
+    delete = request.form.get("delete_user") is not None
+    data = request.form
+    email = data["email"]
+    role = data["role"]
+    existe = database.check_if_user_exists(email)
+    if not existe:
+        flash("Le email n'existe pas")
+    if len(email) > 0 and existe:
+        if delete:
+            status = database.delete_account(email)
+            if status:
+                flash("Compte suprimer")
+            else:
+                flash("Erreur lors de la suppression")
+            return redirect(url_for("checkRole"))
+        if database.getRole(email) != role:
+            status = database.update_role(role, email)
+            if status:
+                flash("Le role a bien été mis à jour")
+            else:
+                flash("Erreur: Le role n'a pas été mis a jour")
+            return redirect(url_for("checkRole"))
+
+
 @app.route('/update_profile', methods=['POST'])
 def update_name():
     userName = None
@@ -244,17 +270,18 @@ def update_password():
 
 @app.route('/delete_account', methods=['GET', 'POST'])
 def delete_account():
-    if "userId" not in session:
+    if "userEmail" not in session:
         return redirect(url_for("login"))
-    user_delete = session["userId"]
-    database.delete_account(user_delete)
-    session.clear()
+    user_delete = session["userEmail"]
+    status = database.delete_account(user_delete)
+
+    if status:
+        flash("Compte supprimer")
+        session.clear()
+    else:
+        flash("Une erreur est survenue")
+
     return redirect(url_for("logout"))
-
-
-@app.route('/deleted_account')
-def deleted_account():
-    return "Votre compte a bien été supprimé."
 
 
 if __name__ == '__main__':

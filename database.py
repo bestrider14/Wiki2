@@ -210,9 +210,20 @@ class Database:
             print(e)
             return False
 
-    def delete_account(self, id):
-        statement = "DELETE FROM utilisateurs WHERE idUtilisateur = %s;"
-        data = id
+    def update_role(self, role, email):
+        statement = f"UPDATE utilisateurs SET utilisateurs.role = %s WHERE utilisateurs.email = %s;"
+        data = role, email
+
+        try:
+            self.cursor.execute(statement, data)
+            return True
+        except pymysql.MySQLError as e:
+            print(e)
+            return False
+
+    def delete_account(self, email):
+        statement = "DELETE FROM utilisateurs WHERE utilisateurs.email = %s;"
+        data = email
         try:
             self.cursor.execute(statement, data)
             return True

@@ -7,11 +7,17 @@
     <h1>Gestion de votre compte utilisateur {{ session['userName']}}</h1>
     <p> Votre email pour ce compte: {{ session['userEmail']}}</p><br>
 
+    {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashed">
+                    {% for message in messages %}
+                        <li class="orange">{{message}}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
     {% include "include/gestion_all_compte.html" %}
     {% include "include/del_account.html" %}
-
-
-
-
 </div>
 {% endblock %}

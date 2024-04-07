@@ -4,6 +4,16 @@
 <div class="content">
     <h1>Gestion de votre compte administrateur {{ session['userName']}}</h1>
 
+    {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashed">
+                    {% for message in messages %}
+                        <li class="orange">{{message}}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
     {% include "include/gestion_all_compte.html" %}
     {% include "include/mod_compte.html" %}
 
@@ -14,16 +24,6 @@
         <form name="upForm" action="/up" method="post">
             <button onclick="confirmUp()">Créer la base de données</button>
         </form>
-        <br>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="flashed">
-                    {% for message in messages %}
-                        <li class="orange">{{message}}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
     </div>
 
     {% include "include/del_account.html" %}
