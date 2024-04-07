@@ -248,7 +248,7 @@ def update_user_admin():
 
 
 @app.route('/update_profile', methods=['POST'])
-def update_name():
+def update_profile():
     userName = None
     try:
         nameForm = request.form
