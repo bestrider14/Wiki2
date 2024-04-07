@@ -188,7 +188,6 @@ def soumettreArticle():
 
     return redirect(url_for('index'))
 
-
 @app.route("/add_comment", methods=["POST"])
 def addComment():
     commentForm = request.form
