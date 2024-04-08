@@ -180,21 +180,8 @@ def soumettreArticle():
         'userID': userID,
     }
 
-    # print(reference)
-    # print(article)
-    #
-    # # trouver l'id de la categorie parente
-    # try:
-    #     idCategorieParent = database.get_categorie_id(article['nomCategorieParente'])
-    #     if not idCategorieParent:
-    #         throw = Exception("CategorieParente n'existe pas de categorie")
-    #     article['idCategorieParente'] = idCategorieParent
-    # except Exception as e:
-    #     print(f"La catégorie parente n'existe pas {e}")
-    #     return redirect(url_for('creeArticle'))
-
     # Récupérer l'id de la catégorie de l'article
-    idCategorie = database.get_categorie_id(article['nomCategorie'])
+    article['idCategorie'] = database.get_categorie_id(article['nomCategorie'])
 
     # ajout d'une référence
     try:
@@ -205,16 +192,20 @@ def soumettreArticle():
         else:
             reference['idReference'] = None
     except Exception as e:
-        print(f"l'Ajout de la référence à la base de donnée a échoué: {e}")
+        flash('L ajout de la référence à la base de donnée a échoué', 'error')
+        print(f"Échec ajout de la référence à la base de donnée a échoué: {e}")
+        return render_template('creeArticle.html')
 
     # ajout d'un article
     try:
         database.add_article(article['titre'], article['contenu'], article['idCategorie'], article['userID'],
                              reference['idReference'])
     except Exception as e:
-        print(f"l'Ajout de l'article' à la base de donnée a échoué: {e}")
+        flash('L ajout de l article a échoué', 'error')
+        print(f"Échec ajout de la référence à la base de donnée a échoué: {e}")
+        return render_template('creeArticle.html')
 
-    flash('Your action was successful!', 'success')
+    flash('Insertion de l article dans la base de donnée réussie !', 'success')
     return redirect(url_for('index'))
 
 

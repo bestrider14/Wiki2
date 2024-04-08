@@ -1,6 +1,6 @@
 import os
 import time
-from datetime import datetime
+from datetime import datetime, date
 import pymysql
 from dotenv import load_dotenv
 
@@ -227,8 +227,7 @@ class Database:
                 self.connection.commit()
                 return self.cursor.lastrowid
             except Exception as e:
-                print(e)
-                return None
+                raise
 
     def add_article(self, titre, contenu, idCategorie, idCreateur, idreference):
         statement = ("INSERT INTO `articles` (`titre`, `contenu`, `dateCreation`, "
@@ -236,6 +235,7 @@ class Database:
         data = (titre, contenu, date.today().isoformat(), idCategorie, idCreateur, idreference)
         try:
             self.cursor.execute(statement, data)
+            self.connection.commit()
             return self.cursor.lastrowid
         except Exception as e:
             print(e)

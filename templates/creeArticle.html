@@ -2,6 +2,15 @@
 {% block body %}
 
 <div class="content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashed">
+                    {% for message in messages %}
+                        <li>{{message}}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
     <h1>Créer un article</h1>
     <form name="article_form" action="{{ url_for('soumettreArticle') }}" method="post">
         <input class="inputLong" name="titreArticle" id="titreArticle" type="text" pattern="^[A-Za-z\s-]+$" placeholder="&#x270e;   Titre" maxlength="50"  required><br><br>
