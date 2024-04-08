@@ -1,43 +1,30 @@
 {% extends 'index.html' %}
-
 {% block body %}
 
-    <div class="content">
+<div class="content">
     <h1>Créer un article</h1>
-    <form name="inscription_form" action="{{ url_for('soumettreArticle') }}" method="post">
-        <input class="inputForm" name="titreArticle" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Titre" maxlength="50" required><br>
-        <input class="inputForm" name="categorie" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Catégorie" maxlength="50" required><br>
-        <label>
-            Sélectionnez la catégorie parente. <br>
-            <select name="categorieParente">
+    <form name="article_form" action="{{ url_for('soumettreArticle') }}" method="post">
+        <input class="inputLong" name="titreArticle" id="titreArticle" type="text" pattern="^[A-Za-z\s-]+$" placeholder="&#x270e;   Titre" maxlength="50"  required><br><br>
+        <label for="categorieParente">Sélectionnez la catégorie parente</label><br>
+            <select name="categorieParente" id="categorieParente">
                 {% for categorie in categories %}
-                <option value="{{ categorie[0] }}">{{ categorie[0] }}</option>
+                    <option value="{{ categorie }}">{{ categorie }}</option>
                 {% endfor %}
             </select>
-        </label><br><br><br>
-        <label for="contenu">Écrivez le contenu de votre article ici.<br><br>
-            <textarea id="contenu" name="contenuArticle" rows="15" cols="70">...</textarea><br>
-        </label><br>
-        <label>
-            Saisir une référence : <br>
-            <input class="inputForm" name="titreReference" type="text" placeholder="Titre"><br>
-            <input class="inputForm" name="auteur" type="text" placeholder="Auteur"><br>
-            <input class="inputForm" name="anneeParution" type="number" placeholder="Année de parution" min="0" max=maxYear><br>
-            <label for="contenu">ISBN : 10 ou 13 caractères<br>
-                <input class="inputForm" name="isbn" type="text" placeholder="ISBN" pattern="\d{10}|\d{13}"><br>
-            </label>
-            <input class="inputForm" name="editeur" type="text" placeholder="Editeur"><br>
-        </label>
-        <div id="references"></div><br>
+        <br>
+        <br>
+        <textarea id="contenu" name="contenuArticle" rows="15" cols="70" class="articleTextArea" placeholder="Écrivez le contenu de votre article ici."></textarea><br>
+        <br>
+        <p>Saisir une référence :</p>
+        <input name="titreReference" type="text" placeholder="Titre"><br>
+        <input name="auteur" type="text" placeholder="Auteur"><br>
+        <input name="dateParution" type="date" placeholder="Date de parution" min="0" max="3000-01-01" onfocus="this.max=new Date().toISOString().split('T')[0]" ><br>
+        <input name="isbn" type="text" placeholder="ISBN 10 ou 13 caractères" pattern="\d{10}|\d{13}"><br>
+        <input name="editeur" type="text" placeholder="Editeur"><br>
+
         <button type="submit">Enregistrer</button>
     </form>
 </div>
-
-
-    <script>
-      const maxYear = new Date().getFullYear();
-
-    </script>
 
 {% endblock %}
 

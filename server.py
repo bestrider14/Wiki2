@@ -1,7 +1,8 @@
-from flask import Flask, render_template, Response, request, jsonify, session, redirect, url_for, flash, json
-from database import Database
-from datetime import date
 import os
+
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
+
+from database import Database
 
 app = Flask(__name__, instance_relative_config=True)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -80,9 +81,13 @@ def get_user_role():
     role = database.getRole(email)
     return jsonify({"user_role": role})
 
+
 @app.route("/findCatParent", methods=["POST"])
 def findCatParent():
-    pass
+    childCat = request.get_json()["childCat"]
+    parentCat = database.getCatParent(childCat)
+    return jsonify({"parentCat": parentCat})
+
 
 @app.route("/validate_user_registration", methods=["POST"])
 def validate_user_registration():
@@ -129,12 +134,15 @@ def search():
 @app.route("/setting")
 def setting():
     if "userRole" in session:
+
+        categories = database.get_all_categories()
+
         if session['userRole'] == 'utilisateur':
             return render_template("user.html")
         if session['userRole'] == 'moderateur':
-            return render_template("moderateur.html")
+            return render_template("moderateur.html", categories=categories)
         if session['userRole'] == 'administrateur':
-            return render_template("admin.html")
+            return render_template("admin.html", categories=categories)
     return redirect(url_for("login"))
 
 
@@ -144,12 +152,13 @@ def creeArticle():
     return render_template("creeArticle.html", categories=categories)
 
 
-@app.route("/creeArticle", methods=['POST'])
+@app.route("/soumettreArticle", methods=['POST'])
 def soumettreArticle():
     # Récupérer l'ID de l'utilisateur
     if 'userId' in session:
         userID = session['userId']
     else:
+        flash("Vous devez être connecté pour faire cette action")
         return redirect(url_for('login'))
 
     reference = {
@@ -167,6 +176,9 @@ def soumettreArticle():
         'nomCategorieParente': request.form["categorieParente"],
         'userID': userID,
     }
+
+    print(reference)
+    print(article)
 
     # trouver l'id de la categorie parente
     try:
@@ -225,7 +237,7 @@ def up():
         flash("Vous devez être administrateur pour faire cette action")
         return redirect(url_for("setting"))
 
-    try:
+    try:¼
         database.up()
         flash("Création de la base de données réussi!")
     except Exception as e:

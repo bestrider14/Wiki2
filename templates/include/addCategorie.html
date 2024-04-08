@@ -1,9 +1,12 @@
 <div class="block_gestion">
     <h2>Gestion des catégories</h2>
-    <form name="CategoriesForm" action="" method="post">
+    <form name="CategoriesForm" action="" method="post" id="CategoriesForm">
         <input name="autocomplete_cat" type="text" id="autocomplete_cat" class="form-control input-lg" placeholder="Nom catégorie" onfocusout="findCatParent()" onkeydown="findCatParent()">
         <select id="catParent" name="catParent" required>
-            <option value="utilisateur">Catégorie parent</option>
+            <option value="" disabled selected hidden>Please Choose...</option>
+            {% for categorie in categories %}
+                <option value="{{ categorie }}">{{ categorie }}</option>
+            {% endfor %}
         </select>
     </form>
 </div>

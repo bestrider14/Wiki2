@@ -69,7 +69,11 @@ class Database:
     def get_all_categories(self):
         statement = f"SELECT nom FROM categories;"
         self.cursor.execute(statement)
-        return self.cursor.fetchall()
+
+        liste = []
+        for cat in self.cursor.fetchall():
+            liste.append(cat[0])
+        return liste
 
     def get_titres_refs(self):
         statement = f"SELECT refs.titreDocument FROM refs;"
@@ -227,7 +231,6 @@ class Database:
             print(e)
             return None
 
-
     # Get les emails des utilisateur pouvant exclure les admins
     def getEmailLike(self, keyword, role):
         statement = f"SELECT utilisateurs.email FROM utilisateurs WHERE utilisateurs.email LIKE %s "
@@ -296,3 +299,9 @@ class Database:
             liste.append(cat[0])
         return liste
 
+    def getCatParent(self, cat):
+        statement = f"SELECT p.nom FROM categories c JOIN categories p ON p.idCategorie = c.idCategorieParent WHERE c.nom = %s;"
+        data = cat
+        self.cursor.execute(statement, data)
+
+        return self.cursor.fetchone()

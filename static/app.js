@@ -32,13 +32,13 @@ const findCatParent = () => {
         axios.post('/findCatParent', {
         childCat: childCat
     }).then((response) => {
-        console.log(response.data.user_role)
-        document.getElementById("selectRole").value = response.data.user_role;
+        document.getElementById("catParent").value = response.data.parentCat;
     }, (error) => {
         console.log(error)
     })
     }
 }
+
 
 const checkUserRole = () => {
     const updateForm = document.forms['update_user']
@@ -77,7 +77,6 @@ function confirmUp() {
 function articleLink(id){
     window.location.href = "/article?id="+id;
 }
-
 
 function changeUsername() {
     const newUsername = prompt("Enter your new username:");

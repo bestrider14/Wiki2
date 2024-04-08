@@ -323,10 +323,11 @@ input:valid {
     font-family: "poppins", sans-serif;
 }
 
-.content form input,select{
+.content form input[type=text], input[type=email], input[type=password], input[type=date], select{
     background-color: #1c1c26 !important;
     color: white;
     border: none;
+    width: 200px;
     border-radius: 6px;
     padding: 5px 10px;
     margin-top: 5px;
@@ -350,3 +351,16 @@ input:valid {
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
+.articleTextArea{
+    color: white;
+    padding-left: 10px;
+    padding-top: 5px;
+    background-color: #1c1c26 !important;
+    width: 80%;
+}
+
+.inputLong{
+    width: 350px;
+}
+
