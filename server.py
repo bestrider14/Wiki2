@@ -1,7 +1,8 @@
-import hashlib
 import os
 import secrets
-from datetime import datetime
+import string
+import random
+from time import time
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 
@@ -326,38 +327,38 @@ def delete_account():
     return redirect(url_for("logout"))
 
 
+from datetime import datetime, timedelta
+
+
 @app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
     if request.method == "POST":
         email = request.form.get("email")
         if database.check_if_user_exists(email):
-            token = secrets.token_urlsafe(32)
-            expiration_time = datetime.now() + timedelta(hours=1)  # Token expires in 1 hour
-            database.store_reset_token(email, token, expiration_time)
-            return redirect(url_for("reset_password", token=token))
+            session["reset_email"] = email
+            return redirect(url_for("reset_password"))
         else:
-            flash("This email address does not exist in our records.")
+            flash("Ce email n'existe pas dans notre base de données.")
     return render_template("forgot_password.html")
+
 
 @app.route("/reset_password", methods=["GET", "POST"])
 def reset_password():
-    token = request.args.get("token")
-    if token:
-        user_email = database.validate_reset_token(token)
-        if user_email:
-            if request.method == "POST":
-                new_password = request.form.get("new_password")
-                database.update_password(user_email, new_password)
-                flash("Your password has been reset successfully.")
-                return redirect(url_for("login"))
-            return render_template("reset_password.html", token=token)
-        else:
-            flash("Invalid or expired reset token.")
-            return redirect(url_for("forgot_password"))
-    else:
-        flash("Reset token is missing.")
+    if "reset_email" not in session:
         return redirect(url_for("forgot_password"))
 
+    if request.method == "POST":
+        new_password = request.form.get("new_password")
+        email = session["reset_email"]
+        if database.reset_password_by_email(email, new_password):
+            session.pop("reset_email")
+            flash("Votre mot de passe a bien été réinitialisé.")
+            return redirect(url_for("login"))
+        else:
+            flash("Nous n'avons pas pu réinitialiser votre mot de passe. Veuillez réessayer.")
+            return redirect(url_for("reset_password"))
+
+    return render_template("reset_password.html")
 
 
 if __name__ == '__main__':

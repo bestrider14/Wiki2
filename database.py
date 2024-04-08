@@ -1,6 +1,6 @@
 import os
-from datetime import time
-
+import time
+from datetime import datetime
 import pymysql
 from dotenv import load_dotenv
 
@@ -318,23 +318,16 @@ class Database:
 
         return self.cursor.fetchone()
 
-    def store_reset_token(self, email, token, expiration_time):
-        statement = "INSERT INTO password_reset_tokens (email, token, expiration_time) VALUES (%s, %s, %s);"
-        data = (email, token, expiration_time)
-        self.cursor.execute(statement, data)
 
-    def validate_reset_token(self, token):
-        current_time = datetime.now()
-        statement = "SELECT email, expiration_time FROM password_reset_tokens WHERE token = %s;"
-        data = (token,)
-        self.cursor.execute(statement, data)
-        result = self.cursor.fetchone()
-        if result and result[1] > current_time:
-            return result[0]  # Return email if token is valid and not expired
-        else:
-            return None
-
-    def update_password(self, email, new_password):
+    def reset_password_by_email(self, email, new_password):
         statement = "UPDATE utilisateurs SET motDePasse = MD5(%s) WHERE email = %s;"
         data = (new_password, email)
-        self.cursor.execute(statement, data)
+        try:
+            self.cursor.execute(statement, data)
+            self.connection.commit()
+            return True
+        except pymysql.MySQLError as e:
+            print(e)
+            return False
+
+
