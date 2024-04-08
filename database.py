@@ -1,7 +1,9 @@
-from datetime import datetime, date
-import pymysql
 import os
+from datetime import time
+
+import pymysql
 from dotenv import load_dotenv
+
 from sql_utils import run_sql_file
 
 
@@ -273,30 +275,7 @@ class Database:
             print(e)
             return False
 
-    def update_password_on_reset(self, motdepasse, id):
-        statement = "UPDATE utilisateurs SET motDePasse = md5(%s) WHERE idUtilisateur = %s;"
-        data = motdepasse, id
-        try:
-            self.cursor.execute(statement, data)
-            return True
-        except pymysql.MySQLError as e:
-            print(e)
-            return False
 
-    def verify_reset_token(self, token, email):
-        try:
-            statement = "SELECT email FROM TokensMdp WHERE token = %s AND email = %s"
-            data = (token, email)
-            self.cursor.execute(statement, data)
-            row = self.cursor.fetchone()
-
-            if row:
-                return True
-            else:
-                return False
-        except pymysql.MySQLError as e:
-            print(e)
-            return False
 
     def update_role(self, role, email):
         statement = f"UPDATE utilisateurs SET utilisateurs.role = %s WHERE utilisateurs.email = %s;"
@@ -338,3 +317,24 @@ class Database:
         self.cursor.execute(statement, data)
 
         return self.cursor.fetchone()
+
+    def store_reset_token(self, email, token, expiration_time):
+        statement = "INSERT INTO password_reset_tokens (email, token, expiration_time) VALUES (%s, %s, %s);"
+        data = (email, token, expiration_time)
+        self.cursor.execute(statement, data)
+
+    def validate_reset_token(self, token):
+        current_time = datetime.now()
+        statement = "SELECT email, expiration_time FROM password_reset_tokens WHERE token = %s;"
+        data = (token,)
+        self.cursor.execute(statement, data)
+        result = self.cursor.fetchone()
+        if result and result[1] > current_time:
+            return result[0]  # Return email if token is valid and not expired
+        else:
+            return None
+
+    def update_password(self, email, new_password):
+        statement = "UPDATE utilisateurs SET motDePasse = MD5(%s) WHERE email = %s;"
+        data = (new_password, email)
+        self.cursor.execute(statement, data)

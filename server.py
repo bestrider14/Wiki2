@@ -1,7 +1,7 @@
 import hashlib
 import os
 import secrets
-import datetime
+from datetime import datetime
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 
@@ -308,22 +308,6 @@ def update_password():
     database.update_password(password, session["userId"])
     return redirect(url_for("setting"))
 
-@app.route('/update_password_on_reset', methods=['POST'])
-def update_password_on_reset():
-    if request.method == 'POST':
-        new_password = request.form.get('new_password')
-        email = request.form.get('email')  # Add this line to retrieve the email from the form
-
-        # Call the database function to update the password
-        try:
-            database.update_password(new_password, email)
-            flash('Password has been reset successfully!')
-        except Exception as e:
-            flash(f'Error updating password: {str(e)}')
-
-        return redirect(url_for("login"))  # Redirect to login page after password reset
-    else:
-        return redirect(url_for("oublieMdp"))
 
 
 @app.route('/delete_account', methods=['GET', 'POST'])
@@ -342,58 +326,38 @@ def delete_account():
     return redirect(url_for("logout"))
 
 
+@app.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+        if database.check_if_user_exists(email):
+            token = secrets.token_urlsafe(32)
+            expiration_time = datetime.now() + timedelta(hours=1)  # Token expires in 1 hour
+            database.store_reset_token(email, token, expiration_time)
+            return redirect(url_for("reset_password", token=token))
+        else:
+            flash("This email address does not exist in our records.")
+    return render_template("forgot_password.html")
 
-@app.route('/oublieMdp', methods=['GET', 'POST'])
-def oublieMdp():
-    if request.method == 'POST':
-        email = request.form.get('email')
-
-        token = secrets.token_urlsafe(20)
-
-        cursor = database.connection.cursor()
-        cursor.execute("INSERT INTO TokensMdp (email, token) VALUES (%s, %s)", (email, token))
-        database.connection.commit()
-        cursor.close()
-
-        # Retrieve userId based on email
-        cursor = database.connection.cursor()
-        cursor.execute("SELECT userId FROM utilisateurs WHERE email = %s", (email,))
-        userId = cursor.fetchone()['userId']
-        cursor.close()
-
-        return redirect(url_for('resetMdpConfirmation', token=token, userId=userId))
-    return render_template('oublieMdp.html')
-
-
-
-@app.route('/resetMdpConfirmation/<token>/<userId>')
-def resetMdpConfirmation(token, userId):
-    if not token or not userId:
-        return redirect(url_for('oublieMdp'))
-
-    return render_template('resetMdpConfirmation.html', token=token, userId=userId)
-
-
-@app.route('/reset_password', methods=['POST'])
+@app.route("/reset_password", methods=["GET", "POST"])
 def reset_password():
-    if request.method == 'POST':
-        new_password = request.form.get('new_password')
-        userId = request.form.get('userId')
-        token = request.form.get('token')
-
-        try:
-            if database.verify_reset_token(token, userId):
-                database.update_password_on_reset(new_password, userId)
-                flash('Password has been reset successfully!')
+    token = request.args.get("token")
+    if token:
+        user_email = database.validate_reset_token(token)
+        if user_email:
+            if request.method == "POST":
+                new_password = request.form.get("new_password")
+                database.update_password(user_email, new_password)
+                flash("Your password has been reset successfully.")
                 return redirect(url_for("login"))
-            else:
-                flash('Invalid or expired password reset token.')
-                return redirect(url_for('oublieMdp'))
-        except Exception as e:
-            flash(f'Error resetting password: {str(e)}')
-            return redirect(url_for('oublieMdp'))
+            return render_template("reset_password.html", token=token)
+        else:
+            flash("Invalid or expired reset token.")
+            return redirect(url_for("forgot_password"))
     else:
-        return redirect(url_for("oublieMdp"))
+        flash("Reset token is missing.")
+        return redirect(url_for("forgot_password"))
+
 
 
 if __name__ == '__main__':

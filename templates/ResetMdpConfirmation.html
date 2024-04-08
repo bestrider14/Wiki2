@@ -4,14 +4,14 @@
 
     <div class="content" style="text-align: center;">
         <h2>Réinitialiser votre mot de passe</h2>
-        <form action="{{ url_for('reset_password') }}" method="post">
-            <label for="new_password">Nouveau mot de passe:</label><br>
-            <input type="password" id="new_password" name="new_password" required><br><br>
-            <label for="confirm_password">Confirmez le mot de passe:</label><br>
-            <input type="password" id="confirm_password" name="confirm_password" required><br><br>
-            <input type="hidden" name="userId" value="{{ userId }}">
-            <input type="hidden" name="token" value="{{ token }}">
-            <button type="submit">Réinitialiser</button>
+        <form action="{{ url_for('update_password_on_reset') }}" method="post">
+             <label for="new_password">Nouveau mot de passe:</label><br>
+             <input type="password" id="new_password" name="new_password" required><br><br>
+             <label for="confirm_password">Confirmez le mot de passe:</label><br>
+             <input type="password" id="confirm_password" name="confirm_password" required><br><br>
+             <input type="hidden" name="userId" value="{{ userId }}">
+             <input type="hidden" name="token" value="{{ token }}">
+             <button type="submit">Réinitialiser</button>
         </form>
     </div>
 
