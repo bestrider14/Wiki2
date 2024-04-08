@@ -139,18 +139,4 @@ function addReferenceToCreeArticleUI(){
     //console.log("Current value of compteurReference:", compteurReference);
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    fetch("footer.html")
-        .then(response => response.text())
-        .then(data => {
-            document.body.insertAdjacentHTML("beforeend", data);
-        });
-});
 
-document.addEventListener("DOMContentLoaded", function() {
-    fetch("footer.html")
-        .then(response => response.text())
-        .then(data => {
-            document.body.insertAdjacentHTML("beforeend", data);
-        });
-});

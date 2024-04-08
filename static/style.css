@@ -146,6 +146,7 @@ input:valid {
     position: absolute;
     margin: auto;
     padding-top: 20px;
+    padding-bottom: 60px;
     height: auto;
     width: 100%;
     min-height: 90vh;
@@ -349,7 +350,7 @@ input:valid {
 }
 
 
-footer {
+.footer {
     background-color: #151515;
     color: #fff;
     text-align: center;
@@ -357,10 +358,9 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
-
 }
 
-footer a {
-    color: #0000FF; /* Couleur du lien */
+.footer a {
+    color: #FF0000; /* Couleur du lien */
     text-decoration: underline;
 }

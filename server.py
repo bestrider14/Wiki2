@@ -19,10 +19,10 @@ def index():
     if autologin:
         print("auto login")
         session["userId"] = 204
-        session["userName"] = "Johny"
-        session["userEmail"] = "jb@gmail.com"
+        session["userName"] = "Test"
+        session["userEmail"] = "Test1@mail.com"
         session["userGenre"] = "Masculin"
-        session["userRole"] = 1
+        session["userRole"] = "moderateur"
     return render_template("index.html")
 
 
