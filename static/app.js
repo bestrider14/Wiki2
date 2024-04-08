@@ -98,7 +98,7 @@ function addReferenceToCreeArticleUI(){
     nomAuteurInput.name =`auteur[${compteurReference}]`;
     nomAuteurInput.placeholder = 'Auteur';
     nouvelleReference.appendChild(nomAuteurInput);
-    
+
     //titreDocument
     const titreInput = document.createElement("input");
     titreInput.type ='text';
@@ -116,7 +116,7 @@ function addReferenceToCreeArticleUI(){
     anneParutionInput.name =`anneeParution[${compteurReference}]`;
     anneParutionInput.placeholder = 'Année de Parution';
     nouvelleReference.appendChild(anneParutionInput);
-    
+
     //ISBN
     const isbnInput = document.createElement('input');
     isbnInput.type = 'text';
@@ -124,7 +124,7 @@ function addReferenceToCreeArticleUI(){
     isbnInput.placeholder = "Entrez le ISBN"
     isbnInput.required = false;
     nouvelleReference.appendChild(isbnInput);
-    
+
     //editeur
     const editeurInput = document.createElement("input");
     editeurInput.type ='text';
@@ -139,3 +139,19 @@ function addReferenceToCreeArticleUI(){
     document.getElementById('referenceCount').value = compteurReference;
     //console.log("Current value of compteurReference:", compteurReference);
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    fetch("footer.html")
+        .then(response => response.text())
+        .then(data => {
+            document.body.insertAdjacentHTML("beforeend", data);
+        });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    fetch("footer.html")
+        .then(response => response.text())
+        .then(data => {
+            document.body.insertAdjacentHTML("beforeend", data);
+        });
+});
