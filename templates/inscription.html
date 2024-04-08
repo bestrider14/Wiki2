@@ -1,7 +1,8 @@
 {% extends 'index.html' %}
 {% block body %}
 <div class="content" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-    <h1>Inscription</h1>
+    <h1>Créez vous un compte</h1>
+    <p>Vous pourrez ainsi créer des articles<br> ainsi qu'écrire des commentaires à propos d'articles existants</p>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <ul class="flashed">
@@ -11,14 +12,14 @@
             </ul>
         {% endif %}
     {% endwith %}
-    <form name="inscription_form" action="{{ url_for('register') }}" method="post">
+    <form name="inscription_form" action="{{ url_for('register') }}" method="post"><br>
         <input class="inputForm" name="nomUtilisateur" type="text" pattern="[a-zA-Z0-9]+" placeholder="&#x270e;   Entrez un nom d'utilisateur" maxlength="50" style="width: 260px;" required><br>
         <input class="inputForm" name="email" type="email" placeholder="&#x270e;   Entrez votre email" maxlength="250" onchange="checkIfUserExists()" style="width: 260px;" required><br>
         <input class="inputForm" name="motDePasse" id="password" type="password" placeholder="&#x270e;   Entrez votre mot de passe" style="width: 260px;" required><br>
         <input class="inputForm" name="verifMotDePasse" id="confirm_password" type="password" placeholder="&#x270e;   Entrez à nouveau votre mot de passe" style="width: 260px;" required><br>
         <select id="selectGenre" name="genre" required>
-            <option value="masculin">Masculin</option>
-            <option value="feminin">Féminin</option>
+            <option value="masculin">Homme</option>
+            <option value="feminin">Femme</option>
             <option value="autre">Autre</option>
         </select><br>
         <button type="submit">S'inscrire</button>

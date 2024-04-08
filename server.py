@@ -10,7 +10,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 database = Database()
 
 # FOR DEBUG ONLY
-autologin = False
+autologin = True
 
 
 @app.route("/")
