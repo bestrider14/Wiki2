@@ -176,28 +176,24 @@ def soumettreArticle():
         'titre': request.form["titreArticle"],
         'contenu': request.form["contenuArticle"],
         'nomCategorie': request.form["categorie"],
-        'nomCategorieParente': request.form["categorieParente"],
         'userID': userID,
     }
 
-    print(reference)
-    print(article)
-
-    # trouver l'id de la categorie parente
-    try:
-        idCategorieParent = database.get_categorie_id(article['nomCategorieParente'])
-        if not idCategorieParent:
-            throw = Exception("CategorieParente n'existe pas de categorie")
-        article['idCategorieParente'] = idCategorieParent
-    except Exception as e:
-        print(f"La catégorie parente n'existe pas {e}")
-        return redirect(url_for('creeArticle'))
+    # print(reference)
+    # print(article)
+    #
+    # # trouver l'id de la categorie parente
+    # try:
+    #     idCategorieParent = database.get_categorie_id(article['nomCategorieParente'])
+    #     if not idCategorieParent:
+    #         throw = Exception("CategorieParente n'existe pas de categorie")
+    #     article['idCategorieParente'] = idCategorieParent
+    # except Exception as e:
+    #     print(f"La catégorie parente n'existe pas {e}")
+    #     return redirect(url_for('creeArticle'))
 
     # Récupérer l'id de la catégorie de l'article
     idCategorie = database.get_categorie_id(article['nomCategorie'])
-    if not idCategorie:  # la catégorie n'existe pas
-        article['idCategorie'] = database.set_categorie(article['nomCategorie'], article['idCategorieParente'])
-    article['idCategorie'] = idCategorie
 
     # ajout d'une référence
     try:

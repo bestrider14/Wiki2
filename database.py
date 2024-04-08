@@ -209,16 +209,24 @@ class Database:
             return False
 
     def add_reference(self, nomAuteur, titreDocument, anneeParution, ISBN, editeur):
-        statement = ("INSERT INTO `refs` (`nomAuteur`, `titreDocument`, `anneeParution`, `ISBN`, `editeur`) VALUES ("
-                     "%s, %s, %s, %s, %s);")
+        statement = ("SELECT * FROM refs WHERE refs.nomAuteur = %s AND refs.titreDocument = %s AND refs.anneeParution = %s AND refs.ISBN = %s AND refs.editeur = %s;")
         data = (nomAuteur, titreDocument, anneeParution, ISBN, editeur)
-        try:
-            self.cursor.execute(statement, data)
-            self.connection.commit()
-            return self.cursor.lastrowid
-        except Exception as e:
-            print(e)
-            return None
+        self.cursor.execute(statement, data)
+        entry = self.cursor.fetchone()
+
+        if entry:
+            idReference = entry[0]
+            return idReference
+        else:
+            statement = f"INSERT INTO `refs` (`nomAuteur`, `titreDocument`, `anneeParution`, `ISBN`, `editeur`) VALUES (%s, %s, %s, %s, %s);"
+            data = (nomAuteur, titreDocument, anneeParution, ISBN, editeur)
+            try:
+                self.cursor.execute(statement, data)
+                self.connection.commit()
+                return self.cursor.lastrowid
+            except Exception as e:
+                print(e)
+                return None
 
     def add_article(self, titre, contenu, idCategorie, idCreateur, idreference):
         statement = ("INSERT INTO `articles` (`titre`, `contenu`, `dateCreation`, "
