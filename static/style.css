@@ -22,21 +22,6 @@
     padding-top: 100px;
 }
 
-footer {
-    background-color: #151515;
-    color: #fff;
-    text-align: center;
-    padding: 12px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-}
-
-footer a {
-    color: #0000FF; /* Couleur du lien */
-    text-decoration: underline;
-}
-
 textarea {
   resize: none;
 }
@@ -323,11 +308,10 @@ input:valid {
     font-family: "poppins", sans-serif;
 }
 
-.content form input[type=text], input[type=email], input[type=password], input[type=date], select{
+.content form input,select{
     background-color: #1c1c26 !important;
     color: white;
     border: none;
-    width: 200px;
     border-radius: 6px;
     padding: 5px 10px;
     margin-top: 5px;
@@ -364,3 +348,19 @@ input:valid {
     width: 350px;
 }
 
+
+footer {
+    background-color: #151515;
+    color: #fff;
+    text-align: center;
+    padding: 12px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+
+}
+
+footer a {
+    color: #0000FF; /* Couleur du lien */
+    text-decoration: underline;
+}
