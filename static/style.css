@@ -364,3 +364,8 @@ input:valid {
     color: #FF0000; /* Couleur du lien */
     text-decoration: underline;
 }
+
+.large-button {
+    padding: 10px 20px; /* Adjust padding to increase button size */
+    font-size: 16px; /* Adjust font size */
+  }

@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 {% block body %}
     <div class="content" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <div><h1>Connexion</h1></div>
+        <div><h1>Connectez vous à votre compte</h1></div>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <ul class="flashed">
@@ -16,6 +16,10 @@
                 <input class="inputForm" name="email" type="email" placeholder="&#x270e;   Entrez votre email" maxlength="250" style="width: 200px;" required><br>
                 <input class="inputForm" name="motDePasse" type="password" placeholder="&#x270e;   Entrez votre mot de passe" style="width: 200px;" required><br>
                 <button type="submit">Connexion</button>
+                <div>
+                <a href="{{ url_for('oublieMdp') }}">Forgot your password?</a>
+                </div>
+
             </form>
         </div>
     </div>

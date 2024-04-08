@@ -1,4 +1,7 @@
+import hashlib
 import os
+import secrets
+import datetime
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 
@@ -10,7 +13,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 database = Database()
 
 # FOR DEBUG ONLY
-autologin = True
+autologin = False
 
 
 @app.route("/")
@@ -324,6 +327,65 @@ def delete_account():
         flash("Une erreur est survenue")
 
     return redirect(url_for("logout"))
+
+
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+
+        # Generate a unique token
+        token = secrets.token_urlsafe(20)
+
+        # Store the token in the database along with the user's email
+        cursor = database.connection.cursor()
+        cursor.execute("INSERT INTO password_reset_tokens (email, token) VALUES (%s, %s)", (email, token))
+        database.connection.commit()
+        cursor.close()
+
+        # Redirect to a page indicating that the password reset link has been sent
+        flash('Password reset link has been sent to your email.')
+        return redirect(url_for('login'))  # Redirect back to login page after password reset
+    return render_template('include/oublieMdp.html')
+
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    # Validate the token
+    cursor = database.connection.cursor()
+    cursor.execute("SELECT email FROM password_reset_tokens WHERE token = %s AND created_at >= %s",
+                   (token, datetime.datetime.now() - datetime.timedelta(hours=1)))
+    row = cursor.fetchone()
+    cursor.close()
+
+    if row is None:
+        # Token is invalid or expired
+        flash('Invalid or expired password reset token.')
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        # Update the user's password in the database
+        email = row['email']
+        new_password = request.form['new_password']
+
+        cursor = database.connection.cursor()
+        hashed_password = hashlib.sha256(new_password.encode()).hexdigest()
+        cursor.execute("UPDATE users SET password = %s WHERE email = %s", (hashed_password, email))
+        database.connection.commit()
+        cursor.close()
+
+        # Delete the used token from the database
+        cursor = database.connection.cursor()
+        cursor.execute("DELETE FROM password_reset_tokens WHERE token = %s", (token,))
+        database.connection.commit()
+        cursor.close()
+
+        # Redirect to a page indicating that the password has been reset
+        flash('Password has been reset successfully!')
+        return redirect(url_for('login'))
+
+    return render_template('include/resetMdp.html', token=token)
 
 
 if __name__ == '__main__':
