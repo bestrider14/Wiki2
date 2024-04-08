@@ -237,7 +237,7 @@ def up():
         flash("Vous devez être administrateur pour faire cette action")
         return redirect(url_for("setting"))
 
-    try:¼
+    try:
         database.up()
         flash("Création de la base de données réussi!")
     except Exception as e:
