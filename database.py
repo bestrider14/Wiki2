@@ -265,6 +265,31 @@ class Database:
             print(e)
             return False
 
+    def update_password_on_reset(self, motdepasse, id):
+        statement = "UPDATE utilisateurs SET motDePasse = md5(%s) WHERE idUtilisateur = %s;"
+        data = motdepasse, id
+        try:
+            self.cursor.execute(statement, data)
+            return True
+        except pymysql.MySQLError as e:
+            print(e)
+            return False
+
+    def verify_reset_token(self, token, email):
+        try:
+            statement = "SELECT email FROM TokensMdp WHERE token = %s AND email = %s"
+            data = (token, email)
+            self.cursor.execute(statement, data)
+            row = self.cursor.fetchone()
+
+            if row:
+                return True
+            else:
+                return False
+        except pymysql.MySQLError as e:
+            print(e)
+            return False
+
     def update_role(self, role, email):
         statement = f"UPDATE utilisateurs SET utilisateurs.role = %s WHERE utilisateurs.email = %s;"
         data = role, email
