@@ -24,29 +24,28 @@
             <br>
             <h4>Réference</h4>
             <br>
-        <table>
-            <tr>
-                <th class="right">Livre:</th>
-                <th>{{ article[9] }}</th>
-            </tr>
-            <tr>
-                <th class="right">Auteur:</th>
-                <th>{{ article[8] }}</th>
-            </tr>
-            <tr>
-                <th class="right">Année de parution:</th>
-                <th>{{ article[10] }}</th>
-            </tr>
-            <tr>
-                <th class="right">ISBN:</th>
-                <th>{{ article[11] }}</th>
-            </tr>
-            <tr>
-                <th class="right">Éditeur:</th>
-                <th>{{ article[12] }}</th>
-            </tr>
-
-        </table>
+            <table>
+                <tr>
+                    <th class="right">Livre:</th>
+                    <th>{{ article[9] }}</th>
+                </tr>
+                <tr>
+                    <th class="right">Auteur:</th>
+                    <th>{{ article[8] }}</th>
+                </tr>
+                <tr>
+                    <th class="right">Année de parution:</th>
+                    <th>{{ article[10] }}</th>
+                </tr>
+                <tr>
+                    <th class="right">ISBN:</th>
+                    <th>{{ article[11] }}</th>
+                </tr>
+                <tr>
+                    <th class="right">Éditeur:</th>
+                    <th>{{ article[12] }}</th>
+                </tr>
+            </table>
         </div>
 
         <p class="text_article">{{ article[3] }}</p>
@@ -56,7 +55,7 @@
             {% if messages %}
                 <ul class="flashed">
                     {% for message in messages %}
-                        <li>{{message}}</li>
+                        <li>{{ message }}</li>
                     {% endfor %}
                 </ul>
             {% endif %}
@@ -72,18 +71,20 @@
         </form>
         {% else %}
             <p class="orange">Vous devez être connecté pour ajouter un commentaire.</p><br>
-        {% endif%}
+        {% endif %}
 
         {% if commentaires %}
             <h2>Commentaires</h2>
             {% for commentaire in commentaires %}
+            <div class="comment-block">
                 <div class="block_commentaire">
                     <h3>{{ commentaire[2] }}</h3>
                     <p>{{ commentaire[0] }}</p>
                     <p class="right">Il y a {{ commentaire[1] }}</p>
                 </div>
+            </div>
             {% endfor %}
-        {% endif%}
+        {% endif %}
 
     </div>
 
