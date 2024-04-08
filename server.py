@@ -330,7 +330,7 @@ def delete_account():
 
 
 
-@app.route('/forgot-password', methods=['GET', 'POST'])
+@app.route('/oublieMdp', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -340,21 +340,20 @@ def forgot_password():
 
         # Store the token in the database along with the user's email
         cursor = database.connection.cursor()
-        cursor.execute("INSERT INTO password_reset_tokens (email, token) VALUES (%s, %s)", (email, token))
+        cursor.execute("INSERT INTO TokensMdp (email, token) VALUES (%s, %s)", (email, token))
         database.connection.commit()
         cursor.close()
 
         # Redirect to a page indicating that the password reset link has been sent
         flash('Password reset link has been sent to your email.')
-        return redirect(url_for('login'))  # Redirect back to login page after password reset
-    return render_template('include/oublieMdp.html')
+        return redirect(url_for('resetMdpConfirmation'))  # Redirect back to login page after password reset
+    return render_template('oublieMdp.html')
 
 
-@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+@app.route('/resetMdp/<token>', methods=['GET', 'POST'])
 def reset_password(token):
-    # Validate the token
     cursor = database.connection.cursor()
-    cursor.execute("SELECT email FROM password_reset_tokens WHERE token = %s AND created_at >= %s",
+    cursor.execute("SELECT email FROM tokensMdp WHERE token = %s AND created_at >= %s",
                    (token, datetime.datetime.now() - datetime.timedelta(hours=1)))
     row = cursor.fetchone()
     cursor.close()
@@ -371,13 +370,13 @@ def reset_password(token):
 
         cursor = database.connection.cursor()
         hashed_password = hashlib.sha256(new_password.encode()).hexdigest()
-        cursor.execute("UPDATE users SET password = %s WHERE email = %s", (hashed_password, email))
+        cursor.execute("UPDATE utilisateurs SET motDePasse = %s WHERE email = %s", (hashed_password, email))
         database.connection.commit()
         cursor.close()
 
         # Delete the used token from the database
         cursor = database.connection.cursor()
-        cursor.execute("DELETE FROM password_reset_tokens WHERE token = %s", (token,))
+        cursor.execute("DELETE FROM TokensMdp WHERE token = %s", (token,))
         database.connection.commit()
         cursor.close()
 
@@ -385,8 +384,26 @@ def reset_password(token):
         flash('Password has been reset successfully!')
         return redirect(url_for('login'))
 
-    return render_template('include/resetMdp.html', token=token)
+    return render_template('resetMdpConfirmation.html', token=token)
 
+
+@app.route('/ResetMdpConfirmation')
+def password_reset_confirmation():
+    # Retrieve the token and email from the session
+    token = session.get('reset_token')
+    email = session.get('reset_email')
+
+    # Clear the session variables
+    session.pop('reset_token', None)
+    session.pop('reset_email', None)
+
+    if not token or not email:
+        # Handle case where session data is missing
+        flash('Password reset link could not be generated. Please try again.')
+        return redirect(url_for('oublieMdp'))
+
+    # Render the password reset confirmation page with the token and email
+    return render_template('resetMdpConfirmation.html', token=token, email=email)
 
 if __name__ == '__main__':
     app.run()
