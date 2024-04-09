@@ -376,3 +376,9 @@ input:valid {
     padding: 10px;
     margin-bottom: 10px;
 }
+
+.bordered {
+    border-left: 2px solid #CCC; /* Left border */
+    border-bottom: 2px solid #CCC; /* Bottom border */
+    padding: 10px;
+}

@@ -1,10 +1,10 @@
 {% extends 'index.html' %}
 {% block body %}
 <div class="content">
-    <h1>{{ article[1] }}</h1>
+    <h1> <span style="border-bottom: 3px solid #ff3d00;">{{ article[1] }}</span></h1>
 
     <div class="content_article">
-        <div class="infos">
+        <div class="infos bordered">
             <h3>Informations sur l'article</h3>
             <br>
             <table>
@@ -78,9 +78,9 @@
             {% for commentaire in commentaires %}
             <div class="comment-block">
                 <div class="block_commentaire">
-                    <h3>{{ commentaire[2] }}</h3>
+                    <h3><span style="border-bottom: 2px solid #ff3d00;">{{ commentaire[2] }}</span></h3>
                     <p>{{ commentaire[0] }}</p>
-                    <p class="right">Il y a {{ commentaire[1] }}</p>
+                    <p class="right"><span style="border-bottom: 1px solid #ff3d00;">Il y a {{ commentaire[1] }}</span></p>
                 </div>
             </div>
             {% endfor %}
