@@ -1,6 +1,8 @@
 import os
-import time
+import string
 from datetime import datetime, date
+import random
+
 import pymysql
 from dotenv import load_dotenv
 
@@ -211,7 +213,7 @@ class Database:
             return False
 
     def add_reference(self, nomAuteur, titreDocument, anneeParution, ISBN, editeur):
-        statement = ("SELECT * FROM refs WHERE refs.nomAuteur = %s AND refs.titreDocument = %s AND refs.anneeParution = %s AND refs.ISBN = %s AND refs.editeur = %s;")
+        statement = "SELECT * FROM refs WHERE refs.nomAuteur = %s AND refs.titreDocument = %s AND refs.anneeParution = %s AND refs.ISBN = %s AND refs.editeur = %s;"
         data = (nomAuteur, titreDocument, anneeParution, ISBN, editeur)
         self.cursor.execute(statement, data)
         entry = self.cursor.fetchone()
@@ -275,8 +277,6 @@ class Database:
             print(e)
             return False
 
-
-
     def update_role(self, role, email):
         statement = f"UPDATE utilisateurs SET utilisateurs.role = %s WHERE utilisateurs.email = %s;"
         data = role, email
@@ -298,10 +298,6 @@ class Database:
             print(e)
             return False
 
-    #   def ajouter_article(self, titre, categorie, categorie_parente, contenu, references):
-
-    #   statement = "INSERT INTO articles (`titre`, contenu, `dateCreation`, `idCategorie`, `idCreateur`, `idRef`) VALUES (
-
     def getCatLike(self, search):
         statement = f"SELECT categories.nom FROM categories WHERE categories.nom LIKE %s;"
         data = '%' + search + '%'
@@ -318,16 +314,18 @@ class Database:
 
         return self.cursor.fetchone()
 
+    def reset_password_by_email(self, email):
+        all_characters = string.ascii_letters + string.digits + string.punctuation
+        length = 10
+        password = ''.join(random.choices(all_characters, k=length))
 
-    def reset_password_by_email(self, email, new_password):
         statement = "UPDATE utilisateurs SET motDePasse = MD5(%s) WHERE email = %s;"
-        data = (new_password, email)
+        data = password, email
         try:
             self.cursor.execute(statement, data)
-            self.connection.commit()
-            return True
+            return password
         except pymysql.MySQLError as e:
             print(e)
-            return False
+            return None
 
 

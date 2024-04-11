@@ -1,10 +1,8 @@
 import os
-import secrets
-import string
-import random
-from time import time
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
+from flask_mail import Mail, Message
+from datetime import datetime
 
 from database import Database
 
@@ -13,20 +11,20 @@ app.config['SECRET_KEY'] = os.urandom(24)
 
 database = Database()
 
-# FOR DEBUG ONLY
-autologin = False
+
+app.config['MAIL_SERVER'] = 'sandbox.smtp.mailtrap.io'
+app.config['MAIL_PORT'] = 2525
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+
+
+mail = Mail(app)
 
 
 @app.route("/")
 def index():
-    # FOR DEBUG ONLY
-    if autologin:
-        print("auto login")
-        session["userId"] = 204
-        session["userName"] = "Test"
-        session["userEmail"] = "Test1@mail.com"
-        session["userGenre"] = "Masculin"
-        session["userRole"] = "moderateur"
     return render_template("index.html")
 
 
@@ -73,7 +71,7 @@ def register():
             session["userRole"] = userInfo[4]
             return redirect(url_for('index'))
         else:
-            flash("Une erreur est survenue lors de l'inscription")
+            flash("Une erreur est survenue lors de l'inscription.")
             return redirect(url_for('register'))
     else:
         return render_template("inscription.html")
@@ -192,8 +190,8 @@ def soumettreArticle():
         else:
             reference['idReference'] = None
     except Exception as e:
-        flash('L ajout de la référence à la base de donnée a échoué', 'error')
-        print(f"Échec ajout de la référence à la base de donnée a échoué: {e}")
+        flash("L'ajout de la référence à la base de donnée a échoué.", "error")
+        print(f"Échec l'ajout de la référence à la base de donnée a échoué: {e}")
         return render_template('creeArticle.html')
 
     # ajout d'un article
@@ -201,11 +199,11 @@ def soumettreArticle():
         database.add_article(article['titre'], article['contenu'], article['idCategorie'], article['userID'],
                              reference['idReference'])
     except Exception as e:
-        flash('L ajout de l article a échoué', 'error')
-        print(f"Échec ajout de la référence à la base de donnée a échoué: {e}")
+        flash("L'ajout de l article a échoué.", "error")
+        print(f"Échec l'ajout de la référence à la base de donnée a échoué: {e}")
         return render_template('creeArticle.html')
 
-    flash('Insertion de l article dans la base de donnée réussie !', 'success')
+    flash("Insertion de l'article dans la base de donnée réussie !", "success")
     return redirect(url_for('index'))
 
 
@@ -221,11 +219,11 @@ def addComment():
 @app.route("/up", methods=["POST"])
 def up():
     if 'userRole' not in session:
-        flash("Vous devez être connecté pour faire cette action")
+        flash("Vous devez être connecté pour faire cette action.")
         return redirect(url_for("login"))
 
     if session['userRole'] != 'administrateur':
-        flash("Vous devez être administrateur pour faire cette action")
+        flash("Vous devez être administrateur pour faire cette action.")
         return redirect(url_for("setting"))
 
     try:
@@ -239,7 +237,7 @@ def up():
 @app.route('/_autocomplete_email', methods=['GET'])
 def autocomplete_email():
     if 'userRole' not in session:
-        flash("Vous devez être connecté pour faire cette action")
+        flash("Vous devez être connecté pour faire cette action.")
         return redirect(url_for("login"))
 
     keyword = request.args.get('q')
@@ -262,21 +260,21 @@ def update_user_admin():
     role = data["role"]
     existe = database.check_if_user_exists(email)
     if not existe:
-        flash("Le email n'existe pas")
+        flash("Le email n'existe pas.")
     if len(email) > 0 and existe:
         if delete:
             status = database.delete_account(email)
             if status:
-                flash("Compte suprimer")
+                flash("Compte suprimer.")
             else:
-                flash("Erreur lors de la suppression")
+                flash("Erreur lors de la suppression.")
             return redirect(url_for("setting"))
         if database.getRole(email) != role:
             status = database.update_role(role, email)
             if status:
-                flash("Le role a bien été mis à jour")
+                flash("Le role a bien été mis à jour.")
             else:
-                flash("Erreur: Le role n'a pas été mis a jour")
+                flash("Erreur: Le role n'a pas été mis a jour.")
             return redirect(url_for("setting"))
 
 
@@ -301,7 +299,6 @@ def update_password():
     return redirect(url_for("setting"))
 
 
-
 @app.route('/delete_account', methods=['GET', 'POST'])
 def delete_account():
     if "userEmail" not in session:
@@ -310,15 +307,12 @@ def delete_account():
     status = database.delete_account(user_delete)
 
     if status:
-        flash("Compte supprimer")
+        flash("Compte supprimer.")
         session.clear()
     else:
-        flash("Une erreur est survenue")
+        flash("Une erreur est survenue.")
 
     return redirect(url_for("logout"))
-
-
-from datetime import datetime, timedelta
 
 
 @app.route("/forgot_password", methods=["GET", "POST"])
@@ -326,30 +320,24 @@ def forgot_password():
     if request.method == "POST":
         email = request.form.get("email")
         if database.check_if_user_exists(email):
-            session["reset_email"] = email
-            return redirect(url_for("reset_password"))
+
+            password = database.reset_password_by_email(email)
+            username = database.getUserInfo(email)[1]
+
+            context = {
+                "username": username,
+                "password": password,
+                "year": datetime.now().year
+            }
+
+            msg = Message('Votre nouveau mot de passe', sender='mailtrap@demomailtrap.com', recipients=[email],
+                          html=render_template(template_name_or_list="email/emailNewPwd.html", **context))
+            mail.send(msg)
+            flash("Un nouveau mot de passe à été générer et envoyer à votre email.")
+            return redirect(url_for("login"))
         else:
             flash("Ce email n'existe pas dans notre base de données.")
     return render_template("forgot_password.html")
-
-
-@app.route("/reset_password", methods=["GET", "POST"])
-def reset_password():
-    if "reset_email" not in session:
-        return redirect(url_for("forgot_password"))
-
-    if request.method == "POST":
-        new_password = request.form.get("new_password")
-        email = session["reset_email"]
-        if database.reset_password_by_email(email, new_password):
-            session.pop("reset_email")
-            flash("Votre mot de passe a bien été réinitialisé.")
-            return redirect(url_for("login"))
-        else:
-            flash("Nous n'avons pas pu réinitialiser votre mot de passe. Veuillez réessayer.")
-            return redirect(url_for("reset_password"))
-
-    return render_template("reset_password.html")
 
 
 if __name__ == '__main__':

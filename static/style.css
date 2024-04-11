@@ -32,6 +32,10 @@ nav{
     justify-content: space-between;
 }
 
+a {
+    color: white;
+}
+
 .logo{
     width: 140px;
 }
@@ -349,7 +353,6 @@ input:valid {
     width: 350px;
 }
 
-
 .footer {
     background-color: #151515;
     color: #fff;
@@ -361,7 +364,7 @@ input:valid {
 }
 
 .footer a {
-    color: #FF0000; /* Couleur du lien */
+    color: #fd3d00; /* Couleur du lien */
     text-decoration: underline;
 }
 
