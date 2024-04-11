@@ -67,7 +67,7 @@
             <textarea name="comment" rows="6" cols="75" placeholder="Écrivez votre commentaire" required></textarea>
             <input name="userId" type="hidden" value="{{ session['userId'] }}">
             <input name="articleId" type="hidden" value="{{ article[0] }}">
-            <button type="submit" class="center">Commenter</button>
+            <button type="submit" class="large-button">Commenter</button>
         </form>
         {% else %}
             <p class="orange">Vous devez être connecté pour ajouter un commentaire.</p><br>
