@@ -9,6 +9,8 @@ CREATE TABLE utilisateurs(
     PRIMARY KEY (idUtilisateur)
 );
 
+CREATE INDEX email_index ON utilisateurs (email);
+
 CREATE TABLE categories(
     idCategorie INT AUTO_INCREMENT,
     nom VARCHAR(255) NOT NULL,
@@ -1452,14 +1454,14 @@ CREATE PROCEDURE compMDP (IN emailIn VARCHAR(255), IN mdpIn VARCHAR(255))
 -- UNE GACHETTE QUI VÉRIFIE LA DATE DES COMMENTAIRES APRÈS LEUR INSERTION (APRÈS QU'ILS SOIENT PUBLIÉ SUR LE SITE)--
 -- POUR QU'IL N'Y AIT PAS DE COMMENTAIRE PLUS AGÉ QUE LA DATE DE CRÉATION DE L'ARTICLE ASSOCIÉ--
 -- SAUF POUR LES COMMENTAIRES ENTRÉS MANUELLEMENT AFIN DE PEUPLER LA BASE DE DONNÉES.--
-CREATE TRIGGER check_date_commentaire AFTER INSERT ON commentaires
+CREATE TRIGGER check_date_commentaire BEFORE INSERT ON messages
 FOR EACH ROW
 BEGIN
     DECLARE date_article DATETIME;
     DECLARE message_erreur VARCHAR(250);
-    SELECT date_creation INTO date_article FROM articles WHERE idArticle = NEW.articleId;
-    IF date_article > NEW.date_commentaire THEN
-        SET message_erreur = CONCAT('La date de création de l\'article est plus récente que la date du commentaire: ', date_article, ' > ', NEW.date_commentaire);
+    SELECT dateCreation INTO date_article FROM articles WHERE idArticle = NEW.idArticle;
+    IF date_article > NEW.horodatage THEN
+        SET message_erreur = CONCAT('La date de création de l\'article est plus récente que la date du commentaire: ', date_article, ' > ', NEW.horodatage);
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = message_erreur;
     END IF;
 END;

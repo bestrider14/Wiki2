@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS utilisateurs;
 
 DROP TRIGGER IF EXISTS uneSeuleRacineHierarchique;
-
+DROP TRIGGER  IF EXISTS check_date_commentaire;
 DROP PROCEDURE IF EXISTS infoArticle;
 DROP PROCEDURE IF EXISTS compMDP;
+
