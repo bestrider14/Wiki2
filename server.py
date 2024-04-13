@@ -101,6 +101,7 @@ def validate_user_registration():
         return jsonify({"user_exists": "False"})
 
 
+# Render la page 'Privacy policy' dans le footer
 @app.route('/privacy')
 def privacy():
     return render_template('include/privacy.html')
@@ -136,16 +137,19 @@ def search():
 @app.route("/setting")
 def setting():
     if "userRole" in session:
-
         categories = database.get_all_categories()
-
+        user_id = session.get("userId")
         if session['userRole'] == 'utilisateur':
             return render_template("user.html")
-        if session['userRole'] == 'moderateur':
-            return render_template("moderateur.html", categories=categories)
-        if session['userRole'] == 'administrateur':
-            return render_template("admin.html", categories=categories)
+        elif session['userRole'] == 'moderateur':
+            articles = database.get_articles_by_user(user_id)  # Fetch articles created by the current user
+            return render_template("moderateur.html", categories=categories, articles=articles)
+        elif session['userRole'] == 'administrateur':
+            articles = database.get_articles_by_user(user_id)  # Fetch articles created by the current user
+            return render_template("admin.html", categories=categories, articles=articles)
     return redirect(url_for("login"))
+
+
 
 
 @app.route("/creeArticle", methods=['GET'])
@@ -333,11 +337,43 @@ def forgot_password():
             msg = Message('Votre nouveau mot de passe', sender='mailtrap@demomailtrap.com', recipients=[email],
                           html=render_template(template_name_or_list="email/emailNewPwd.html", **context))
             mail.send(msg)
-            flash("Un nouveau mot de passe à été générer et envoyer à votre email.")
+            flash("Un nouveau mot de passe à été généré et envoyé à votre email.")
             return redirect(url_for("login"))
         else:
             flash("Ce email n'existe pas dans notre base de données.")
     return render_template("forgot_password.html")
+
+
+
+@app.route("/delete_article", methods=["POST"])
+def delete_article():
+    if "userId" not in session:
+        flash("Vous devez vous connecter pour faire cette action.", "error")
+        return redirect(url_for("login"))
+    user_id = session["userId"]
+    article_id = request.form.get("article_id")
+
+    if not article_id:
+        flash("ID de l'article non fourni.", "error")
+        return redirect(url_for("index"))
+    success = database.delete_article(article_id, user_id)
+    if success:
+        flash("L'article a bien été supprimé.", "success")
+    else:
+        flash("L'article n'a pas pu être supprimé.", "error")
+    return redirect(url_for("setting"))
+
+
+@app.route("/article/<int:idArticle>")
+def view_article(idArticle):
+    article = database.get_article(idArticle)
+    if article:
+        # Render l'article
+        return render_template('article.html', article=article)
+    else:
+        # Si l'article n'est pas trouvé
+        flash('Article not found.', 'error')
+        return redirect(url_for('index'))
 
 
 if __name__ == '__main__':

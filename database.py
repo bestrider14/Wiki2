@@ -328,4 +328,26 @@ class Database:
             print(e)
             return None
 
+    def delete_article(self, article_id, user_id):
+        statement = "DELETE FROM articles WHERE idArticle = %s AND idCreateur = %s;"
+        data = (article_id, user_id)
+        try:
+            self.cursor.execute(statement, data)
+            self.connection.commit()
+            return True
+        except pymysql.MySQLError as e:
+            print(e)
+            return False
 
+    def get_articles_by_user(self, user_id):
+        statement = "SELECT idArticle, titre, contenu, dateCreation FROM articles WHERE idCreateur = %s;"
+        data = (user_id,)
+        self.cursor.execute(statement, data)
+        articles = []
+        for row in self.cursor.fetchall():
+            article = {
+                "id": row[0],
+                "title": row[1],
+            }
+            articles.append(article)
+        return articles

@@ -1,32 +1,34 @@
 <div class="block_gestion">
-    <h2>Gestion des utilisateurs</h2>
-    <form name="update_user" action="{{ url_for('update_user_admin') }}" method="post">
-        <input class="inputForm" name="email" type="email" id="autocomplete_email" placeholder="Chercher un Email" maxlength="250" onfocusout="checkUserRole()" onkeydown="checkUserRole()">
-        <select id="selectRole" name="role" required>
-            <option value="utilisateur">Utilisateur</option>
-            <option value="moderateur">Modératreur</option>
-            <option value="administrateur">Administrateur</option>
-        </select>
-        <input type="checkbox" name="delete_user" id="delete_user">
-        <label for="delete_user"> Supprimer</label>
-        <button type="submit">Changer</button>
-    </form>
-</div>
+        <h2>Gestion des utilisateurs</h2>
+        <form name="update_user" action="{{ url_for('update_user_admin') }}" method="post">
+            <input class="inputForm" name="email" type="email" id="autocomplete_email" placeholder="Chercher un Email" maxlength="250" onfocusout="checkUserRole()" onkeydown="checkUserRole()">
+            <select id="selectRole" name="role" required>
+                <option value="utilisateur">Utilisateur</option>
+                <option value="moderateur">Modératreur</option>
+                <option value="administrateur">Administrateur</option>
+            </select>
+            <input type="checkbox" name="delete_user" id="delete_user">
+            <label for="delete_user"> Supprimer</label>
+            <button type="submit">Changer</button>
+        </form>
+    </div>
 
-<!-- Script pour auto complete email apres 4 caractere -->
-<script type="text/javascript">
-$(function() {
-    $("#autocomplete_email").autocomplete({
-        source:function(request, response) {
-            $.getJSON("{{url_for('autocomplete_email')}}",{
-                q: request.term, // in flask, "q" will be the argument to look for using request.args
-            }, function(data) {
-                response(data.matching_results); // matching_results from jsonify
-            });
-        },
-        minLength: 2,
-    });
-})
-</script>
-<!-- Script pour actualiser le champ du role apres lecriture du email -->
-<script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+    <!-- Script pour auto complete email apres 4 caractere -->
+    <script type="text/javascript">
+    $(function() {
+        $("#autocomplete_email").autocomplete({
+            source:function(request, response) {
+                $.getJSON("{{url_for('autocomplete_email')}}",{
+                    q: request.term, // in flask, "q" will be the argument to look for using request.args
+                }, function(data) {
+                    response(data.matching_results); // matching_results from jsonify
+                });
+            },
+            minLength: 2,
+        });
+    })
+
+    </script>
+    <!-- Script pour actualiser le champ du role apres lecriture du email -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+</body>

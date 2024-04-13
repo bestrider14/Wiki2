@@ -385,3 +385,27 @@ input:valid {
     border-bottom: 2px solid #CCC; /* Bottom border */
     padding: 10px;
 }
+
+.custom_articles {
+    width: 18%; /* Set the width to 18% of the screen width */
+    border: 1px solid #ccc; /* Add a border */
+    padding: 10px; /* Add some padding */
+    border-radius: 10px; /* Add rounded corners */
+    margin: 0 auto; /* Center the box horizontally */
+}
+
+.custom_articles ul {
+    list-style-type: none; /* Remove the default list-style (bullets) */
+    padding: 0; /* Remove default padding */
+}
+
+.custom_articles li {
+    margin-bottom: 10px; /* Add some space between list items */
+}
+
+.underline {
+    display: inline-block;
+    border-bottom: 3px solid #fd3d00; /* Replace "your-color" with the desired color */
+    color: inherit;
+    text-decoration-thickness: 1px;
+}
