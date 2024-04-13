@@ -140,12 +140,13 @@ def setting():
         categories = database.get_all_categories()
         user_id = session.get("userId")
         if session['userRole'] == 'utilisateur':
-            return render_template("user.html")
+            articles = database.get_articles_by_user(user_id)  # Fetch les articles créés par l'utilisateur courant
+            return render_template("user.html", categories=categories, articles=articles)
         elif session['userRole'] == 'moderateur':
-            articles = database.get_articles_by_user(user_id)  # Fetch articles created by the current user
+            articles = database.get_articles_by_user(user_id)  # Fetch les articles créés par le modérateur courant
             return render_template("moderateur.html", categories=categories, articles=articles)
         elif session['userRole'] == 'administrateur':
-            articles = database.get_articles_by_user(user_id)  # Fetch articles created by the current user
+            articles = database.get_articles_by_user(user_id)  # Fetch les articles créés par l'administrateur courant
             return render_template("admin.html", categories=categories, articles=articles)
     return redirect(url_for("login"))
 
@@ -282,34 +283,45 @@ def update_user_admin():
             return redirect(url_for("setting"))
 
 
+#Metttre à jour le nom d'utilisateur
 @app.route('/update_profile', methods=['POST'])
 def update_profile():
-    userName = None
+    userName = None  #Initialiser la variable
     try:
+        #Prendre le nouveau nom d'utilisateur fourni par l'utilisateur
         nameForm = request.form
         userName = nameForm["username"]
+        #Update le nom d'utilisateur dans la database
         database.update_profile(userName, session["userId"])
-    except Exception as e:
+    except Exception as e:  #Si erreur
         flash(str(e))
+    #Modifier le userName courant pour l'utilisateur en session
     session["userName"] = userName
-    return redirect(url_for("setting"))
+    return redirect(url_for("setting")) #Redirection vers la page gestion de profil
 
 
+#Mettre à jour son mot de passe
 @app.route('/update_password', methods=['POST'])
 def update_password():
+    #Prendre le mot de passe fourni pas l'utilisateur
     mdpForm = request.form
     password = mdpForm["password"]
+    #Update le mot de passe dans la database
     database.update_password(password, session["userId"])
-    return redirect(url_for("setting"))
+    return redirect(url_for("setting")) #Redirection vers page de gestion de profil
 
 
+#Supprimer son compte utilisateur
 @app.route('/delete_account', methods=['GET', 'POST'])
 def delete_account():
     if "userEmail" not in session:
         return redirect(url_for("login"))
-    user_delete = session["userEmail"]
+    user_delete = session["userEmail"] #Fetch le email de l'utilisateur(clé primaire)
+
+    #Supprimer tout ce qui est relié à ce email (donc le donc) de la base de données
     status = database.delete_account(user_delete)
 
+    #Message de confirmation:
     if status:
         flash("Compte supprimer.")
         session.clear()
@@ -319,12 +331,15 @@ def delete_account():
     return redirect(url_for("logout"))
 
 
+#Réinitialiser le mot de passe utlisateur
 @app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
     if request.method == "POST":
+        #Chercher le email
         email = request.form.get("email")
-        if database.check_if_user_exists(email):
 
+        #Si le email existe, on le reset
+        if database.check_if_user_exists(email):
             password = database.reset_password_by_email(email)
             username = database.getUserInfo(email)[1]
 
@@ -338,24 +353,26 @@ def forgot_password():
                           html=render_template(template_name_or_list="email/emailNewPwd.html", **context))
             mail.send(msg)
             flash("Un nouveau mot de passe à été généré et envoyé à votre email.")
-            return redirect(url_for("login"))
+            return redirect(url_for("login")) #Redirection vers la page de connection
         else:
             flash("Ce email n'existe pas dans notre base de données.")
     return render_template("forgot_password.html")
 
 
-
+#Supprimer un article
 @app.route("/delete_article", methods=["POST"])
 def delete_article():
+    # Fetch le userId de l'utilisateur
     if "userId" not in session:
         flash("Vous devez vous connecter pour faire cette action.", "error")
         return redirect(url_for("login"))
     user_id = session["userId"]
+    #Trouver l'id de l'article
     article_id = request.form.get("article_id")
-
     if not article_id:
         flash("ID de l'article non fourni.", "error")
         return redirect(url_for("index"))
+    # Supprimer l'article
     success = database.delete_article(article_id, user_id)
     if success:
         flash("L'article a bien été supprimé.", "success")
@@ -364,6 +381,7 @@ def delete_article():
     return redirect(url_for("setting"))
 
 
+#Voir un article à partir de son profil (Gestion des articles)
 @app.route("/article/<int:idArticle>")
 def view_article(idArticle):
     article = database.get_article(idArticle)
