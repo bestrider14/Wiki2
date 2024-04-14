@@ -11,14 +11,12 @@ app.config['SECRET_KEY'] = os.urandom(24)
 
 database = Database()
 
-
 app.config['MAIL_SERVER'] = 'sandbox.smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 2525
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
-
 
 mail = Mail(app)
 
@@ -151,12 +149,62 @@ def setting():
     return redirect(url_for("login"))
 
 
-
-
 @app.route("/creeArticle", methods=['GET'])
 def creeArticle():
     categories = database.get_all_categories()
     return render_template("creeArticle.html", categories=categories)
+
+
+@app.route("/soumettreEditArticle", methods=['POST'])
+def soumettreEditArticle():
+    # Récupérer l'ID de l'utilisateur
+    if 'userId' in session:
+        userID = session['userId']
+    else:
+        flash("Vous devez être connecté pour faire cette action")
+        return redirect(url_for('login'))
+
+    reference = {
+        'idRef': request.form['refId'],
+        'auteur': request.form["auteur"],
+        'titre': request.form["titreReference"],
+        'anneeParution': request.form["anneeParution"],
+        'isbn': request.form["isbn"],
+        'editeur': request.form["editeur"]
+    }
+
+    print(reference['idRef'])
+
+    article = {
+        'idArticle': request.form['articleId'],
+        'titre': request.form["titreArticle"],
+        'contenu': request.form["contenuArticle"],
+        'nomCategorie': request.form["categorie"],
+        'userID': userID,
+    }
+
+    # Récupérer l'id de la catégorie de l'article
+    article['idCategorie'] = database.get_categorie_id(article['nomCategorie'])
+
+    # Update d'une référence
+    try:
+        database.update_reference(reference['auteur'], reference['titre'], reference['anneeParution'],
+                                              reference['isbn'], reference['editeur'], reference['idRef'])
+    except Exception as e:
+        flash("La mise a jour de la référence à la base de donnée a échoué.", "error")
+        print(f"Échec de La mise a jour de la référence à la base de donnée a échoué: {e}")
+        return render_template('creeArticle.html')
+
+    # Update d'un article
+    try:
+        database.update_article(article['titre'], article['contenu'], article['idCategorie'], article['userID'],
+                                reference['idRef'], article['idArticle'])
+    except Exception as e:
+        flash("La mise a jour de l article a échoué.", "error")
+        print(f"Échec la mise a jour de la référence à la base de donnée a échoué: {e}")
+        return render_template('creeArticle.html')
+
+    return redirect(url_for('article', id=article['idArticle']))
 
 
 @app.route("/soumettreArticle", methods=['POST'])
@@ -283,45 +331,45 @@ def update_user_admin():
             return redirect(url_for("setting"))
 
 
-#Metttre à jour le nom d'utilisateur
+# Metttre à jour le nom d'utilisateur
 @app.route('/update_profile', methods=['POST'])
 def update_profile():
-    userName = None  #Initialiser la variable
+    userName = None  # Initialiser la variable
     try:
-        #Prendre le nouveau nom d'utilisateur fourni par l'utilisateur
+        # Prendre le nouveau nom d'utilisateur fourni par l'utilisateur
         nameForm = request.form
         userName = nameForm["username"]
-        #Update le nom d'utilisateur dans la database
+        # Update le nom d'utilisateur dans la database
         database.update_profile(userName, session["userId"])
-    except Exception as e:  #Si erreur
+    except Exception as e:  # Si erreur
         flash(str(e))
-    #Modifier le userName courant pour l'utilisateur en session
+    # Modifier le userName courant pour l'utilisateur en session
     session["userName"] = userName
-    return redirect(url_for("setting")) #Redirection vers la page gestion de profil
+    return redirect(url_for("setting"))  # Redirection vers la page gestion de profil
 
 
-#Mettre à jour son mot de passe
+# Mettre à jour son mot de passe
 @app.route('/update_password', methods=['POST'])
 def update_password():
-    #Prendre le mot de passe fourni pas l'utilisateur
+    # Prendre le mot de passe fourni pas l'utilisateur
     mdpForm = request.form
     password = mdpForm["password"]
-    #Update le mot de passe dans la database
+    # Update le mot de passe dans la database
     database.update_password(password, session["userId"])
-    return redirect(url_for("setting")) #Redirection vers page de gestion de profil
+    return redirect(url_for("setting"))  # Redirection vers page de gestion de profil
 
 
-#Supprimer son compte utilisateur
+# Supprimer son compte utilisateur
 @app.route('/delete_account', methods=['GET', 'POST'])
 def delete_account():
     if "userEmail" not in session:
         return redirect(url_for("login"))
-    user_delete = session["userEmail"] #Fetch le email de l'utilisateur(clé primaire)
+    user_delete = session["userEmail"]  # Fetch le email de l'utilisateur(clé primaire)
 
-    #Supprimer tout ce qui est relié à ce email (donc le donc) de la base de données
+    # Supprimer tout ce qui est relié à ce email (donc le donc) de la base de données
     status = database.delete_account(user_delete)
 
-    #Message de confirmation:
+    # Message de confirmation:
     if status:
         flash("Compte supprimer.")
         session.clear()
@@ -331,14 +379,14 @@ def delete_account():
     return redirect(url_for("logout"))
 
 
-#Réinitialiser le mot de passe utlisateur
+# Réinitialiser le mot de passe utlisateur
 @app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
     if request.method == "POST":
-        #Chercher le email
+        # Chercher le email
         email = request.form.get("email")
 
-        #Si le email existe, on le reset
+        # Si le email existe, on le reset
         if database.check_if_user_exists(email):
             password = database.reset_password_by_email(email)
             username = database.getUserInfo(email)[1]
@@ -353,13 +401,13 @@ def forgot_password():
                           html=render_template(template_name_or_list="email/emailNewPwd.html", **context))
             mail.send(msg)
             flash("Un nouveau mot de passe à été généré et envoyé à votre email.")
-            return redirect(url_for("login")) #Redirection vers la page de connection
+            return redirect(url_for("login"))  # Redirection vers la page de connection
         else:
             flash("Ce email n'existe pas dans notre base de données.")
     return render_template("forgot_password.html")
 
 
-#Supprimer un article
+# Supprimer un article
 @app.route("/delete_article", methods=["POST"])
 def delete_article():
     # Fetch le userId de l'utilisateur
@@ -367,7 +415,7 @@ def delete_article():
         flash("Vous devez vous connecter pour faire cette action.", "error")
         return redirect(url_for("login"))
     user_id = session["userId"]
-    #Trouver l'id de l'article
+    # Trouver l'id de l'article
     article_id = request.form.get("article_id")
     if not article_id:
         flash("ID de l'article non fourni.", "error")
@@ -381,7 +429,32 @@ def delete_article():
     return redirect(url_for("setting"))
 
 
-#Voir un article à partir de son profil (Gestion des articles)
+# Editer un article
+@app.route("/edit_article", methods=["POST", "GET"])
+def edit_article():
+    if request.method == "POST":
+        # Fetch le userId de l'utilisateur
+        if "userId" not in session:
+            flash("Vous devez vous connecter pour faire cette action.", "error")
+            return redirect(url_for("login"))
+        user_id = session["userId"]
+        # Trouver l'id de l'article
+        article_id = request.form.get("article_id")
+        if not article_id:
+            flash("ID de l'article non fourni.", "error")
+            return redirect(url_for("index"))
+
+        session["infoArticle"] = database.get_article(article_id)
+
+        if session["infoArticle"][6] == user_id or session["userRole"] == "moderateur":
+            return redirect(url_for("edit_article"))
+        return redirect(url_for("index"))
+    else:
+        categories = database.get_all_categories()
+        return render_template("creeArticle.html", infoArticle=session["infoArticle"], categories=categories, edit=1)
+
+
+# Voir un article à partir de son profil (Gestion des articles)
 @app.route("/article/<int:idArticle>")
 def view_article(idArticle):
     article = database.get_article(idArticle)

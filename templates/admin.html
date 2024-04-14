@@ -9,35 +9,15 @@
     {% include "include/gestionDesUtilisateurs.html" %}
     {% include "include/addCategorie.html" %}
 
-
     <div class="block_gestion">
         <h2>Gestion de la base de données</h2>
         <form name="upForm" action="/up" method="post">
             <button onclick="confirmUp()">Créer la base de données</button>
         </form>
     </div>
+
     {% include "include/modifiezVosDonnees.html" %}
-
-    {% if articles %}
-    <div class="block_articles custom_articles">
-    <br>
-    <h2 class="underline">Gestion de vos articles</h2>
-    <ul>
-        {% for article in articles %}
-        <li class="article_block">
-            <br>
-            <h3><a href="{{ url_for('view_article', idArticle=article.id) }}">{{ article.title }}</a></h3>
-            <!-- Bouton pour supprimer l'article -->
-            <form action="{{ url_for('delete_article') }}" method="post">
-                <input type="hidden" name="article_id" value="{{ article.id }}">
-                <button type="submit">Supprimer</button>
-            </form>
-        </li>
-        {% endfor %}
-    </ul>
-    </div>
-    {% endif %}
-
+    {% include "include/gestionArticles.html" %}
     {% include "include/del_account.html" %}
 
 </div>

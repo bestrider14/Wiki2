@@ -49,7 +49,7 @@ class Database:
     def get_connection(self):
         return self.connection
 
-    #Trouver un article pour à la barre de recherche sur la page principale
+    # Trouver un article pour la barre de recherche sur la page principale
     def find_article(self, keyword):
         statement = (f"SELECT articles.titre, articles.dateCreation, utilisateurs.nom, articles.idArticle "
                      f"FROM articles INNER JOIN utilisateurs ON articles.idCreateur = utilisateurs.idUtilisateur "
@@ -213,7 +213,31 @@ class Database:
             print(e)
             return False
 
-    #Ajouter une référence liée à un article
+    # Update une référence liée à un article
+    def update_reference(self, nomAuteur, titreDocument, anneeParution, ISBN, editeur, refId):
+        statement = "UPDATE refs SET nomAuteur = %s, titreDocument = %s, anneeParution = %s, ISBN = %s, editeur =%s WHERE idReference = %s;"
+        data = (nomAuteur, titreDocument, anneeParution, ISBN, editeur, refId)
+
+        try:
+            self.cursor.execute(statement, data)
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    # Update un article
+    def update_article(self, titre, contenu, idCategorie, idCreateur, idreference, idArticle):
+        statement = f"UPDATE articles SET titre = %s, contenu = %s, idCategorie = %s, idCreateur = %s, idRef = %s WHERE idArticle = %s"
+        data = (titre, contenu, idCategorie, idCreateur, idreference, idArticle)
+        print(data)
+        try:
+            self.cursor.execute(statement, data)
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    # Ajouter une référence liée à un article
     def add_reference(self, nomAuteur, titreDocument, anneeParution, ISBN, editeur):
         statement = "SELECT * FROM refs WHERE refs.nomAuteur = %s AND refs.titreDocument = %s AND refs.anneeParution = %s AND refs.ISBN = %s AND refs.editeur = %s;"
         data = (nomAuteur, titreDocument, anneeParution, ISBN, editeur)
@@ -233,14 +257,13 @@ class Database:
             except Exception as e:
                 raise
 
-    #Ajouter un article (lors de la création)
+    # Ajouter un article (lors de la création)
     def add_article(self, titre, contenu, idCategorie, idCreateur, idreference):
         statement = ("INSERT INTO `articles` (`titre`, `contenu`, `dateCreation`, "
                      "`idCategorie`, `idCreateur`, `idRef`) VALUES (%s, %s, %s, %s, %s, %s);")
         data = (titre, contenu, date.today().isoformat(), idCategorie, idCreateur, idreference)
         try:
             self.cursor.execute(statement, data)
-            self.connection.commit()
             return self.cursor.lastrowid
         except Exception as e:
             print(e)
@@ -259,7 +282,7 @@ class Database:
             liste.append(email[0])
         return liste
 
-    #Modifier son nom d'utilisateur sur la page de gestion de profil
+    # Modifier son nom d'utilisateur sur la page de gestion de profil
     def update_profile(self, nom, id):
         statement = f"UPDATE utilisateurs SET nom = %s WHERE idUtilisateur = %s;"
         data = nom, id
@@ -270,7 +293,7 @@ class Database:
             print(e)
             return False
 
-    #Modifier son mot de passe sur sa page de gestion de profil
+    # Modifier son mot de passe sur sa page de gestion de profil
     def update_password(self, motdepasse, id):
         statement = "UPDATE utilisateurs SET motDePasse = md5(%s) WHERE idUtilisateur = %s;"
         data = motdepasse, id
@@ -281,7 +304,7 @@ class Database:
             print(e)
             return False
 
-    #Modifier le rôle d'un utilisateur (seulement modérateurs et administrateurs)
+    # Modifier le rôle d'un utilisateur (seulement modérateurs et administrateurs)
     def update_role(self, role, email):
         statement = f"UPDATE utilisateurs SET utilisateurs.role = %s WHERE utilisateurs.email = %s;"
         data = role, email
@@ -293,7 +316,7 @@ class Database:
             print(e)
             return False
 
-    #Supprimer son compte utilisateur
+    # Supprimer son compte utilisateur
     def delete_account(self, email):
         statement = "DELETE FROM utilisateurs WHERE utilisateurs.email = %s;"
         data = email
@@ -313,7 +336,7 @@ class Database:
             liste.append(cat[0])
         return liste
 
-    #Trouver la catégorie parent d'un article
+    # Trouver la catégorie parent d'un article
     def getCatParent(self, cat):
         statement = f"SELECT p.nom FROM categories c JOIN categories p ON p.idCategorie = c.idCategorieParent WHERE c.nom = %s;"
         data = cat
@@ -321,7 +344,7 @@ class Database:
 
         return self.cursor.fetchone()
 
-    #Envoyer un mot de passe temporaire à l'utilisateur lors de la réinitialisation du mot de passe
+    # Envoyer un mot de passe temporaire à l'utilisateur lors de la réinitialisation du mot de passe
     def reset_password_by_email(self, email):
         all_characters = string.ascii_letters + string.digits + string.punctuation
         length = 10
@@ -336,7 +359,7 @@ class Database:
             print(e)
             return None
 
-    #Supprimer un article (seulement celui qui l'a créé)
+    # Supprimer un article (seulement celui qui l'a créé)
     def delete_article(self, article_id, user_id):
         statement = "DELETE FROM articles WHERE idArticle = %s AND idCreateur = %s;"
         data = (article_id, user_id)
